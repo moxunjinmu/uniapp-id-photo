@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>搜索结果 - 证件照小程序</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        height: 100vh;
+        background-color: #f7f7f7;
+        overflow: hidden;
+      }
+      .status-bar {
+        height: 44px;
+        background-color: #f7f7f7;
+        position: relative;
+        z-index: 10;
+      }
+      .search-bar:focus {
+        outline: none;
+      }
+      .bottom-nav {
+        border-top: 1px solid #eaeaea;
+        background-color: white;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #999;
+      }
+      .bottom-nav-item.active {
+        color: #6366f1;
+      }
+      .bottom-nav-icon {
+        font-size: 24px;
+        margin-bottom: 2px;
+      }
+      .photo-type-item {
+        border-radius: 12px;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      .photo-type-item.hot {
+        border: 1px solid #e0e7ff;
+      }
+      .hot-tag {
+        background-color: #e0e7ff;
+        color: #6366f1;
+        border-radius: 10px;
+        padding: 2px 6px;
+        font-size: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 状态栏 -->
+    <div class="status-bar flex items-center px-4">
+      <a href="home.html" class="text-gray-500">
+        <i class="fas fa-chevron-left mr-2"></i>
+      </a>
+      <div class="text-sm font-medium">选择照片尺寸</div>
+    </div>
+
+    <!-- 搜索栏 -->
+    <div class="mx-4 my-3 relative">
+      <div class="bg-gray-100 rounded-full flex items-center px-4 py-2">
+        <i class="fas fa-search text-gray-400 mr-2"></i>
+        <input type="text" placeholder="搜索证件照尺寸..." class="bg-transparent w-full text-sm search-bar" />
+      </div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="pb-20 overflow-auto h-full px-4">
+      <!-- 热门尺寸 -->
+      <div class="mb-4">
+        <h3 class="text-sm font-bold text-gray-800 mb-2">热门尺寸</h3>
+
+        <!-- 护照照片 -->
+        <div class="photo-type-item hot p-3 mb-3" onclick="window.location.href='detail.html'">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
+              <i class="fas fa-id-card text-blue-500 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-center">
+                <h4 class="font-medium">
+                  护照照片
+                  <span class="hot-tag">热门</span>
+                </h4>
+                <i class="fas fa-chevron-right text-gray-300 self-center"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">35×45mm</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 一寸照片 -->
+        <div class="photo-type-item hot p-3 mb-3">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mr-3">
+              <i class="fas fa-id-badge text-green-500 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-center">
+                <h4 class="font-medium">
+                  一寸照片
+                  <span class="hot-tag">热门</span>
+                </h4>
+                <i class="fas fa-chevron-right text-gray-300 self-center"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">25×35mm</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 其他尺寸 -->
+      <div>
+        <h3 class="text-sm font-bold text-gray-800 mb-2">其他尺寸</h3>
+
+        <!-- 二寸照片 -->
+        <div class="photo-type-item p-3 mb-3">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center mr-3">
+              <i class="fas fa-graduation-cap text-amber-500 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-center">
+                <h4 class="font-medium">二寸照片</h4>
+                <i class="fas fa-chevron-right text-gray-300 self-center"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">35×49mm</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 小二寸照片 -->
+        <div class="photo-type-item p-3 mb-3">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-rose-50 rounded-lg flex items-center justify-center mr-3">
+              <i class="fas fa-user-tie text-rose-500 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-center">
+                <h4 class="font-medium">小二寸照片</h4>
+                <i class="fas fa-chevron-right text-gray-300 self-center"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">35×45mm</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 大一寸照片 -->
+        <div class="photo-type-item p-3 mb-3">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center mr-3">
+              <i class="fas fa-address-card text-purple-500 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-center">
+                <h4 class="font-medium">大一寸照片</h4>
+                <i class="fas fa-chevron-right text-gray-300 self-center"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">33×48mm</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 小一寸照片 -->
+        <div class="photo-type-item p-3 mb-3">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-cyan-50 rounded-lg flex items-center justify-center mr-3">
+              <i class="fas fa-id-card-alt text-cyan-500 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-center">
+                <h4 class="font-medium">小一寸照片</h4>
+                <i class="fas fa-chevron-right text-gray-300 self-center"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">22×32mm</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 学生证照片 -->
+        <div class="photo-type-item p-3 mb-3">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
+              <i class="fas fa-user-graduate text-indigo-500 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-center">
+                <h4 class="font-medium">学生证照片</h4>
+                <i class="fas fa-chevron-right text-gray-300 self-center"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">20×25mm</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav flex justify-around items-center">
+      <a href="home.html" class="bottom-nav-item">
+        <i class="fas fa-home bottom-nav-icon"></i>
+        <span>首页</span>
+      </a>
+      <a href="toolbox.html" class="bottom-nav-item">
+        <i class="fas fa-th-large bottom-nav-icon"></i>
+        <span>工具箱</span>
+      </a>
+      <a href="history.html" class="bottom-nav-item">
+        <i class="fas fa-history bottom-nav-icon"></i>
+        <span>历史</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item">
+        <i class="fas fa-user bottom-nav-icon"></i>
+        <span>我的</span>
+      </a>
+    </div>
+  </body>
+</html>

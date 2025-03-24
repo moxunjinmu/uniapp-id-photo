@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>详情页 - 证件照小程序</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        height: 100vh;
+        background-color: #f7f7f7;
+        overflow: hidden;
+      }
+      .status-bar {
+        height: 44px;
+        background-color: #f7f7f7;
+        position: relative;
+        z-index: 10;
+      }
+      .bottom-nav {
+        border-top: 1px solid #eaeaea;
+        background-color: white;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #999;
+      }
+      .bottom-nav-item.active {
+        color: #6366f1;
+      }
+      .bottom-nav-icon {
+        font-size: 24px;
+        margin-bottom: 2px;
+      }
+      .size-box {
+        border: 1px dashed #d1d5db;
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .size-label {
+        font-size: 12px;
+        color: #6b7280;
+        text-align: center;
+      }
+      .size-value {
+        font-size: 16px;
+        font-weight: 500;
+        text-align: center;
+      }
+      .tip-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+      .tip-number {
+        width: 20px;
+        height: 20px;
+        background-color: #fef3c7;
+        color: #d97706;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        margin-right: 10px;
+        flex-shrink: 0;
+      }
+      .action-button {
+        border-radius: 12px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 状态栏 -->
+    <div class="status-bar flex items-center px-4">
+      <a href="search_results.html" class="text-gray-500">
+        <i class="fas fa-chevron-left mr-2"></i>
+      </a>
+      <div class="text-sm font-medium">护照照片 (35×45mm)</div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="pb-20 overflow-auto h-full px-4">
+      <!-- 尺寸参数 -->
+      <div class="mt-4">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">类型: 护照照片 (35×45mm)</h3>
+        <p class="text-xs text-gray-500 mb-3">大多数国家护照、签证通用尺寸</p>
+
+        <!-- 尺寸展示 -->
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <div class="flex">
+            <!-- 照片示例 -->
+            <div class="w-1/3 mr-4">
+              <div
+                id="photo-example"
+                class="relative shadow-lg hover:shadow-xl transition-shadow duration-300"
+                style="width: 100%; aspect-ratio: 295/413">
+                <div class="absolute inset-0 bg-blue-500 rounded-sm" id="photo-bg"></div>
+                <div class="absolute inset-0 border-8 border-white rounded-sm"></div>
+              </div>
+            </div>
+
+            <!-- 参数信息 -->
+            <div class="w-2/3">
+              <div class="grid grid-cols-1 gap-2">
+                <div class="flex justify-between items-center">
+                  <div class="text-sm text-gray-700">规格:</div>
+                  <div class="text-sm font-medium">一寸</div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                  <div class="text-sm text-gray-700">文件格式:</div>
+                  <div class="text-sm font-medium">jpg</div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                  <div class="text-sm text-gray-700">像素尺寸:</div>
+                  <div class="text-sm font-medium">295×413px</div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                  <div class="text-sm text-gray-700">冲印尺寸:</div>
+                  <div class="text-sm font-medium">25×35mm</div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                  <div class="text-sm text-gray-700">分辨率:</div>
+                  <div class="text-sm font-medium">300dpi</div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                  <div class="text-sm text-gray-700">背景色:</div>
+                  <div class="flex space-x-2">
+                    <div
+                      class="w-6 h-6 rounded-full bg-red-500 cursor-pointer border-2 border-white shadow-sm"
+                      onclick="changeBackground('bg-red-500')"></div>
+                    <div
+                      class="w-6 h-6 rounded-full bg-blue-500 cursor-pointer border-2 border-white shadow-sm"
+                      onclick="changeBackground('bg-blue-500')"
+                      id="default-bg"></div>
+                    <div
+                      class="w-6 h-6 rounded-full bg-gray-400 cursor-pointer border-2 border-white shadow-sm"
+                      onclick="changeBackground('bg-gray-400')"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 温馨提示 -->
+      <div class="mt-6">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">温馨提示</h3>
+
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <div class="tip-item">
+            <div class="tip-number">1</div>
+            <div class="text-xs text-gray-700">照片背景必须是纯白色</div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">2</div>
+            <div class="text-xs text-gray-700">双耳必须露出（避免佩戴耳饰）</div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">3</div>
+            <div class="text-xs text-gray-700">不能佩戴墨镜（避免佩戴有色眼镜）</div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">4</div>
+            <div class="text-xs text-gray-700">照片必须是近期（6个月内）拍摄</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 拍照选项 -->
+      <div class="mt-6">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">拍照上传</h3>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="action-button bg-indigo-50 text-indigo-600" onclick="window.location.href='photo_result.html'">
+            <i class="fas fa-images mr-2"></i>
+            <span>相册上传</span>
+          </div>
+
+          <div class="action-button bg-blue-50 text-blue-600" onclick="window.location.href='camera.html'">
+            <i class="fas fa-camera mr-2"></i>
+            <span>拍照上传</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav flex justify-around items-center">
+      <a href="home.html" class="bottom-nav-item">
+        <i class="fas fa-home bottom-nav-icon"></i>
+        <span>首页</span>
+      </a>
+      <a href="toolbox.html" class="bottom-nav-item">
+        <i class="fas fa-th-large bottom-nav-icon"></i>
+        <span>工具箱</span>
+      </a>
+      <a href="history.html" class="bottom-nav-item">
+        <i class="fas fa-history bottom-nav-icon"></i>
+        <span>历史</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item">
+        <i class="fas fa-user bottom-nav-icon"></i>
+        <span>我的</span>
+      </a>
+    </div>
+    <script>
+      // 初始化时设置默认背景色
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("default-bg").click();
+      });
+
+      // 切换背景色函数
+      function changeBackground(colorClass) {
+        const photoBg = document.getElementById("photo-bg");
+
+        // 移除所有背景色类
+        photoBg.classList.remove("bg-red-500", "bg-blue-500", "bg-gray-400");
+
+        // 添加选中的背景色类
+        photoBg.classList.add(colorClass);
+      }
+    </script>
+  </body>
+</html>

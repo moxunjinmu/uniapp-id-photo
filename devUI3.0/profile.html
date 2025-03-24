@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>个人中心 - 证件照小程序</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        height: 100vh;
+        background-color: #f7f7f7;
+        overflow: hidden;
+      }
+      .status-bar {
+        height: 44px;
+        background-color: #f7f7f7;
+        position: relative;
+        z-index: 10;
+      }
+      .bottom-nav {
+        border-top: 1px solid #eaeaea;
+        background-color: white;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #999;
+      }
+      .bottom-nav-item.active {
+        color: #6366f1;
+      }
+      .bottom-nav-icon {
+        font-size: 24px;
+        margin-bottom: 2px;
+      }
+      .profile-header {
+        background-color: white;
+        border-radius: 16px;
+        padding: 16px;
+        margin: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      .avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #e0e7ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6366f1;
+        font-size: 24px;
+      }
+      .faq-item {
+        background-color: white;
+        border-radius: 12px;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .faq-header {
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+      .faq-content {
+        padding: 0 16px 16px 16px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+      }
+      .about-item {
+        background-color: white;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 状态栏 -->
+    <div class="status-bar flex items-center justify-between px-4">
+      <div class="text-sm font-medium">我的</div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="pb-20 overflow-auto h-full">
+      <!-- 个人中心标题 -->
+      <div class="p-4 pb-2">
+        <h2 class="text-lg font-bold text-gray-800">个人中心</h2>
+      </div>
+
+      <!-- 访客信息 -->
+      <div class="profile-header flex items-center">
+        <div class="avatar mr-4">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-medium">访客</h3>
+          <p class="text-xs text-gray-500 mt-1">登录以使用更多功能</p>
+        </div>
+        <div class="text-indigo-500">
+          <i class="fas fa-sign-in-alt mr-1"></i>
+          <span class="text-sm">登录</span>
+        </div>
+      </div>
+
+      <!-- 常见问题 -->
+      <div class="px-4 py-2">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">常见问题</h3>
+
+        <!-- 问题1 -->
+        <div class="faq-item">
+          <div class="faq-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
+            <div class="text-sm">为什么我的照片有水印?</div>
+            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+          </div>
+          <div class="faq-content hidden">免费版本的照片会带有水印。升级到高级版可以去除水印，获得更多专业功能。</div>
+        </div>
+
+        <!-- 问题2 -->
+        <div class="faq-item">
+          <div class="faq-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
+            <div class="text-sm">有哪些背景颜色可用?</div>
+            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+          </div>
+          <div class="faq-content hidden">
+            我们提供白色、蓝色、红色等多种标准背景颜色，满足不同证件照要求。高级版用户可以使用自定义背景颜色。
+          </div>
+        </div>
+
+        <!-- 问题3 -->
+        <div class="faq-item">
+          <div class="faq-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
+            <div class="text-sm">我可以冲洗人像照片吗?</div>
+            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+          </div>
+          <div class="faq-content hidden">
+            可以，我们提供专业的冲印服务，可以将您的电子照片冲印成实体照片并快递到家。
+          </div>
+        </div>
+
+        <!-- 问题4 -->
+        <div class="faq-item">
+          <div class="faq-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
+            <div class="text-sm">我的照片在应用中保存多久?</div>
+            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+          </div>
+          <div class="faq-content hidden">免费用户的照片将保存7天，之后将自动删除。高级用户可以永久保存照片。</div>
+        </div>
+
+        <!-- 问题5 -->
+        <div class="faq-item">
+          <div class="faq-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
+            <div class="text-sm">我可以直接从应用打印照片吗?</div>
+            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+          </div>
+          <div class="faq-content hidden">
+            可以，您可以将照片保存到手机后，通过连接打印机进行打印，或者使用我们的冲印服务。
+          </div>
+        </div>
+      </div>
+
+      <!-- 关于部分 -->
+      <div class="px-4 py-2">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">关于</h3>
+
+        <div class="about-item">
+          <div class="flex items-center">
+            <i class="fas fa-info-circle text-indigo-500 mr-3"></i>
+            <span class="text-sm">关于我们</span>
+          </div>
+          <i class="fas fa-chevron-right text-gray-300"></i>
+        </div>
+
+        <div class="about-item">
+          <div class="flex items-center">
+            <i class="fas fa-code text-indigo-500 mr-3"></i>
+            <span class="text-sm">版本</span>
+          </div>
+          <span class="text-xs text-gray-500">1.0.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav flex justify-around items-center">
+      <a href="home.html" class="bottom-nav-item">
+        <i class="fas fa-home bottom-nav-icon"></i>
+        <span>首页</span>
+      </a>
+      <a href="toolbox.html" class="bottom-nav-item">
+        <i class="fas fa-th-large bottom-nav-icon"></i>
+        <span>工具箱</span>
+      </a>
+      <a href="history.html" class="bottom-nav-item">
+        <i class="fas fa-history bottom-nav-icon"></i>
+        <span>历史</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item active">
+        <i class="fas fa-user bottom-nav-icon"></i>
+        <span>我的</span>
+      </a>
+    </div>
+  </body>
+</html>

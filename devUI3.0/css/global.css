@@ -1,0 +1,25 @@
+/* 全局滚动条隐藏样式 */
+
+/* WebKit浏览器 */
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Firefox浏览器 */
+* {
+  scrollbar-width: none;
+}
+
+/* IE浏览器 */
+* {
+  -ms-overflow-style: none;
+}
+
+/* 保持滚动功能 */
+.overflow-auto,
+.overflow-y-auto,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}

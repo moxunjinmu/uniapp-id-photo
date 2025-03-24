@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>历史记录 - 证件照小程序</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        height: 100vh;
+        background-color: #f7f7f7;
+        overflow: hidden;
+      }
+      /* 隐藏滚动条但保持可滚动功能 */
+      .pb-20::-webkit-scrollbar {
+        display: none;
+      }
+      .pb-20 {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+      .status-bar {
+        height: 44px;
+        background-color: #f7f7f7;
+        position: relative;
+        z-index: 10;
+      }
+      .bottom-nav {
+        border-top: 1px solid #eaeaea;
+        background-color: white;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #999;
+      }
+      .bottom-nav-item.active {
+        color: #6366f1;
+      }
+      .bottom-nav-icon {
+        font-size: 24px;
+        margin-bottom: 2px;
+      }
+      .history-item {
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      .history-image {
+        width: 70px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+      }
+      .empty-icon {
+        width: 80px;
+        height: 80px;
+        background-color: #e0e7ff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        color: #6366f1;
+        font-size: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 状态栏 -->
+    <div class="status-bar flex items-center justify-between px-4">
+      <div class="text-sm font-medium">历史记录</div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="pb-20 overflow-auto h-full">
+      <!-- 历史记录标题 -->
+      <div class="p-4 pb-2">
+        <h2 class="text-lg font-bold text-gray-800">历史记录</h2>
+        <p class="text-xs text-gray-500">您最近的照片（保存7天）</p>
+      </div>
+
+      <!-- 有历史记录的状态 (隐藏) -->
+      <div class="px-4 py-2 hidden">
+        <div class="history-item p-3 mb-3">
+          <div class="flex">
+            <div class="mr-3">
+              <img
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+                alt="历史照片"
+                class="history-image" />
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-medium text-sm">护照照片</h3>
+                  <p class="text-xs text-gray-500">35×45mm</p>
+                </div>
+                <div class="text-blue-500">
+                  <i class="fas fa-eye"></i>
+                </div>
+              </div>
+              <div class="mt-2 text-xs text-gray-500">
+                <div>拍摄于: 2023/5/25</div>
+                <div>过期于: 2023/6/1</div>
+              </div>
+              <div class="mt-2 flex justify-end">
+                <button class="bg-red-50 text-red-500 text-xs px-2 py-1 rounded-full">
+                  <i class="fas fa-trash-alt mr-1"></i>
+                  删除
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 更多历史记录项 -->
+        <div class="history-item p-3 mb-3">
+          <div class="flex">
+            <div class="mr-3">
+              <img
+                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+                alt="历史照片"
+                class="history-image" />
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-medium text-sm">一寸照片</h3>
+                  <p class="text-xs text-gray-500">25×35mm</p>
+                </div>
+                <div class="text-blue-500">
+                  <i class="fas fa-eye"></i>
+                </div>
+              </div>
+              <div class="mt-2 text-xs text-gray-500">
+                <div>拍摄于: 2023/5/23</div>
+                <div>过期于: 2023/5/30</div>
+              </div>
+              <div class="mt-2 flex justify-end">
+                <button class="bg-red-50 text-red-500 text-xs px-2 py-1 rounded-full">
+                  <i class="fas fa-trash-alt mr-1"></i>
+                  删除
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 清除所有记录按钮 (隐藏) -->
+      <div class="px-4 py-2 hidden">
+        <button class="w-full bg-white text-red-500 border border-red-200 rounded-full py-2 text-sm font-medium">
+          <i class="fas fa-trash-alt mr-1"></i>
+          清除所有历史记录
+        </button>
+      </div>
+
+      <!-- 暂无记录状态 (显示) -->
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="fas fa-history"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-800 mb-2">暂无照片</h3>
+        <p class="text-sm text-gray-500 mb-6">您拍摄的照片将会在这里显示7天</p>
+        <button class="bg-indigo-500 text-white px-6 py-2 rounded-full text-sm font-medium">立即拍摄</button>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav flex justify-around items-center">
+      <a href="home.html" class="bottom-nav-item">
+        <i class="fas fa-home bottom-nav-icon"></i>
+        <span>首页</span>
+      </a>
+      <a href="toolbox.html" class="bottom-nav-item">
+        <i class="fas fa-th-large bottom-nav-icon"></i>
+        <span>工具箱</span>
+      </a>
+      <a href="history.html" class="bottom-nav-item active">
+        <i class="fas fa-history bottom-nav-icon"></i>
+        <span>历史</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item">
+        <i class="fas fa-user bottom-nav-icon"></i>
+        <span>我的</span>
+      </a>
+    </div>
+    <script>
+      // 页面跳转功能
+      document.addEventListener("DOMContentLoaded", function () {
+        // 底部导航栏跳转
+        const navLinks = document.querySelectorAll(".bottom-nav-item");
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            const href = this.getAttribute("href");
+            if (href) {
+              window.location.href = href;
+            }
+          });
+        });
+
+        // 立即拍摄按钮跳转
+        const takePhotoBtn = document.querySelector(".empty-state button");
+        if (takePhotoBtn) {
+          takePhotoBtn.addEventListener("click", function () {
+            window.location.href = "camera.html";
+          });
+        }
+
+        // 历史记录项点击跳转到详情页
+        const historyItems = document.querySelectorAll(".history-item");
+        historyItems.forEach((item) => {
+          item.addEventListener("click", function (e) {
+            // 如果点击的是删除按钮，则不跳转
+            if (!e.target.closest(".bg-red-50")) {
+              window.location.href = "detail.html";
+            }
+          });
+        });
+
+        // 删除按钮点击事件
+        const deleteButtons = document.querySelectorAll(".bg-red-50");
+        deleteButtons.forEach((button) => {
+          button.addEventListener("click", function (e) {
+            e.stopPropagation(); // 阻止事件冒泡
+            // 这里可以添加删除逻辑
+            alert("删除成功");
+          });
+        });
+
+        // 清除所有历史记录按钮点击事件
+        const clearAllBtn = document.querySelector(".px-4.py-2:not(.hidden) button");
+        if (clearAllBtn) {
+          clearAllBtn.addEventListener("click", function () {
+            // 这里可以添加清除所有记录的逻辑
+            alert("已清除所有历史记录");
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

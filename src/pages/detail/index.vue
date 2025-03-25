@@ -87,11 +87,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
 import { useCameraController } from "@/hooks/useCameraController";
 import { useToast } from "@/hooks/useToast";
 import { PhotoType } from "@/enums/PhotoType";
+
 const configStore = useConfigStore();
 const { chooseFromAlbum } = useCameraController();
 const { showToast } = useToast();
@@ -145,21 +147,26 @@ const handlePhotoType = (photoTypeId: string) => {
   return photoType;
 };
 
-onMounted(() => {
-  // 获取路由参数
-  const params = (this as any).$instance.router.params;
-  photoTypeId.value = params.id;
+onLoad((options: any) => {
+  console.log("options", options);
 
-  if (photoTypeId.value) {
-    photoType.value = handlePhotoType(photoTypeId.value);
-  } else {
-    uni.showToast({
-      title: "参数错误",
-      icon: "none",
-    });
-    setTimeout(() => {
-      uni.navigateBack();
-    }, 1500);
+  try {
+    // 获取路由参数
+    photoTypeId.value = options.id;
+
+    if (photoTypeId.value) {
+      photoType.value = handlePhotoType(photoTypeId.value);
+    } else {
+      uni.showToast({
+        title: "参数错误",
+        icon: "none",
+      });
+      setTimeout(() => {
+        uni.navigateBack();
+      }, 1500);
+    }
+  } catch (error) {
+    console.log("error", error);
   }
 });
 </script>

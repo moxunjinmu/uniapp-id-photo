@@ -104,7 +104,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
 import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
 import { useHistoryStore } from "@/store/modules/history";
@@ -241,11 +242,10 @@ const setDefaultBackground = (photoType: PhotoType) => {
   }
 };
 
-onMounted(() => {
+onLoad((options: any) => {
   // 获取路由参数
-  const params = (this as any).$instance.router.params;
-  photoTypeId.value = params.id || "";
-  rawImgPath.value = decodeURIComponent(params.imgPath || "");
+  photoTypeId.value = options.id || "";
+  rawImgPath.value = decodeURIComponent(options.imgPath || "");
 
   if (photoTypeId.value) {
     photoType.value = handlePhotoType(photoTypeId.value);

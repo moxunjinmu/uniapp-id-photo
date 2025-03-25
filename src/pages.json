@@ -14,6 +14,12 @@
       }
     },
     {
+      "path": "pages/toolbox/index",
+      "style": {
+        "navigationBarTitleText": "工具箱"
+      }
+    },
+    {
       "path": "pages/history/index",
       "style": {
         "navigationBarTitleText": "历史"
@@ -49,6 +55,12 @@
         "text": "首页",
         "iconPath": "static/tabbar/home.png",
         "selectedIconPath": "static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/toolbox/index",
+        "text": "工具箱",
+        "iconPath": "static/tabbar/toolbox.png",
+        "selectedIconPath": "static/tabbar/toolbox-active.png"
       },
       {
         "pagePath": "pages/history/index",

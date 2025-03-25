@@ -3,7 +3,7 @@
     <!-- 顶部用户信息 -->
     <view class="user-info-section bg-white py-6 px-4 mb-4">
       <view class="flex items-center">
-        <image class="avatar" :src="userInfo.avatarUrl || '/static/default-avatar.png'" @tap="handleLogin" />
+        <image class="avatar" :src="userInfo.avatarUrl || '/static/woman-default-avatar.png'" @tap="handleLogin" />
         <view class="ml-4 flex-1">
           <view v-if="isLoggedIn">
             <text class="text-32rpx font-medium block mb-1">{{ userInfo.nickName || "游客" }}</text>

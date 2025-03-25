@@ -14,6 +14,31 @@
       }
     },
     {
+      "path": "pages/search/index",
+      "style": {
+        "navigationBarTitleText": "搜索"
+      }
+    },
+    {
+      "path": "pages/detail/index",
+      "style": {
+        "navigationBarTitleText": "证件照详情"
+      }
+    },
+    {
+      "path": "pages/camera/index",
+      "style": {
+        "navigationBarTitleText": "拍摄证件照",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/photo-result/index",
+      "style": {
+        "navigationBarTitleText": "拍照结果"
+      }
+    },
+    {
       "path": "pages/toolbox/index",
       "style": {
         "navigationBarTitleText": "工具箱"
@@ -40,7 +65,7 @@
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "uni-app",
+    "navigationBarTitleText": "证件照小助手",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
   },

@@ -1,7 +1,7 @@
 {
-  "name": "",
-  "appid": "",
-  "description": "",
+  "name": "证件照莫循版",
+  "appid": "__UNI__F099C10",
+  "description": "一个用来生成证件照的应用",
   "versionName": "1.0.0",
   "versionCode": "100",
   "transformPx": false,

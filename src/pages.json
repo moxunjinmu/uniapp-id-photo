@@ -14,6 +14,37 @@
       }
     },
     {
+      "path": "pages/search/index",
+      "style": {
+        "navigationBarTitleText": "搜索"
+      }
+    },
+    {
+      "path": "pages/detail/index",
+      "style": {
+        "navigationBarTitleText": "证件照详情"
+      }
+    },
+    {
+      "path": "pages/camera/index",
+      "style": {
+        "navigationBarTitleText": "拍摄证件照",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/photo-result/index",
+      "style": {
+        "navigationBarTitleText": "拍照结果"
+      }
+    },
+    {
+      "path": "pages/toolbox/index",
+      "style": {
+        "navigationBarTitleText": "工具箱"
+      }
+    },
+    {
       "path": "pages/history/index",
       "style": {
         "navigationBarTitleText": "历史"
@@ -34,7 +65,7 @@
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "uni-app",
+    "navigationBarTitleText": "证件照小助手",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
   },
@@ -49,6 +80,12 @@
         "text": "首页",
         "iconPath": "static/tabbar/home.png",
         "selectedIconPath": "static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/toolbox/index",
+        "text": "工具箱",
+        "iconPath": "static/tabbar/toolbox.png",
+        "selectedIconPath": "static/tabbar/toolbox-active.png"
       },
       {
         "pagePath": "pages/history/index",

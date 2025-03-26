@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>拍照结果 - 证件照小程序</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        height: 100vh;
+        background-color: #f7f7f7;
+        overflow: hidden;
+      }
+      .status-bar {
+        height: 44px;
+        background-color: #f7f7f7;
+        position: relative;
+        z-index: 10;
+      }
+      .bottom-nav {
+        border-top: 1px solid #eaeaea;
+        background-color: white;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #999;
+      }
+      .bottom-nav-item.active {
+        color: #6366f1;
+      }
+      .bottom-nav-icon {
+        font-size: 24px;
+        margin-bottom: 2px;
+      }
+      .photo-preview {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .photo-preview img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+      .watermark {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.3);
+        transform: rotate(-45deg);
+      }
+      .color-option {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin: 0 5px;
+        cursor: pointer;
+        border: 2px solid transparent;
+      }
+      .color-option.active {
+        border-color: #6366f1;
+      }
+      .action-button {
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        width: 100%;
+      }
+      .thumbnail {
+        width: 60px;
+        height: 80px;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 0 5px;
+        border: 1px solid #e5e7eb;
+      }
+      .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 状态栏 -->
+    <div class="status-bar flex items-center px-4">
+      <a href="detail.html" class="text-gray-500">
+        <i class="fas fa-chevron-left mr-2"></i>
+      </a>
+      <div class="text-sm font-medium">照片预览</div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="pb-20 overflow-auto h-full">
+      <!-- 照片预览区 -->
+      <div class="flex p-4">
+        <!-- 主预览图 -->
+        <div class="w-2/3 pr-2">
+          <div class="photo-preview rounded-lg shadow-sm">
+            <img
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+              alt="证件照预览" />
+            <div class="watermark">证件照小程序</div>
+          </div>
+        </div>
+
+        <!-- 多图预览 -->
+        <div class="w-1/3 pl-2 flex flex-col justify-between">
+          <div class="text-xs text-gray-500 mb-2">多图预览</div>
+          <div class="flex flex-col space-y-2">
+            <div class="thumbnail">
+              <img
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+                alt="缩略图1" />
+            </div>
+            <div class="thumbnail">
+              <img
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+                alt="缩略图2" />
+            </div>
+            <div class="thumbnail">
+              <img
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+                alt="缩略图3" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 照片信息 -->
+      <div class="px-4 py-2">
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <h3 class="text-sm font-bold text-gray-800 mb-2">照片信息</h3>
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <div class="text-gray-500">照片类型</div>
+              <div>护照照片 (35×45mm)</div>
+            </div>
+            <div>
+              <div class="text-gray-500">像素尺寸</div>
+              <div>413×531px</div>
+            </div>
+            <div>
+              <div class="text-gray-500">分辨率</div>
+              <div>300dpi</div>
+            </div>
+            <div>
+              <div class="text-gray-500">文件大小</div>
+              <div>约 150KB</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 背景色选择 -->
+      <div class="px-4 py-2">
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <h3 class="text-sm font-bold text-gray-800 mb-3">背景色选择</h3>
+          <div class="flex justify-between items-center">
+            <div class="color-option active" style="background-color: #ffffff"></div>
+            <div class="color-option" style="background-color: #e0f2fe"></div>
+            <div class="color-option" style="background-color: #f0fdf4"></div>
+            <div class="color-option" style="background-color: #fef3c7"></div>
+            <div class="color-option" style="background-color: #ffe4e6"></div>
+            <div class="color-option" style="background-color: #f3e8ff"></div>
+            <div class="color-option" style="background-color: #000000"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="px-4 py-2">
+        <div class="grid grid-cols-1 gap-3">
+          <button class="action-button bg-indigo-500 text-white">
+            <i class="fas fa-download mr-2"></i>
+            <span>下载电子照</span>
+          </button>
+
+          <button class="action-button bg-pink-500 text-white">
+            <i class="fas fa-print mr-2"></i>
+            <span>冲印照片</span>
+          </button>
+
+          <button class="action-button bg-gray-100 text-gray-700">
+            <i class="fas fa-share-alt mr-2"></i>
+            <span>分享</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav flex justify-around items-center">
+      <a href="home.html" class="bottom-nav-item">
+        <i class="fas fa-home bottom-nav-icon"></i>
+        <span>首页</span>
+      </a>
+      <a href="toolbox.html" class="bottom-nav-item">
+        <i class="fas fa-th-large bottom-nav-icon"></i>
+        <span>工具箱</span>
+      </a>
+      <a href="history.html" class="bottom-nav-item">
+        <i class="fas fa-history bottom-nav-icon"></i>
+        <span>历史</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item">
+        <i class="fas fa-user bottom-nav-icon"></i>
+        <span>我的</span>
+      </a>
+    </div>
+  </body>
+</html>

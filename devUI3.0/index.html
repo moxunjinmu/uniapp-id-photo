@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>证件照小程序原型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      body {
+        background-color: #f5f5f5;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      .phone-container {
+        width: 390px;
+        height: 844px;
+        background-color: white;
+        border-radius: 40px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        margin: 20px;
+        display: inline-block;
+      }
+      .notch {
+        width: 150px;
+        height: 30px;
+        background-color: #000;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        z-index: 10;
+      }
+      .iframe-container {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+      .prototype-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 20px;
+      }
+      .prototype-title {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto py-8">
+      <h1 class="text-3xl font-bold text-center mb-8">证件照小程序原型设计</h1>
+
+      <div class="prototype-grid">
+        <!-- 首页 -->
+        <div>
+          <div class="prototype-title">首页</div>
+          <div class="phone-container">
+            <div class="notch"></div>
+            <iframe src="home.html" class="iframe-container"></iframe>
+          </div>
+        </div>
+
+        <!-- 搜索结果页 -->
+        <div>
+          <div class="prototype-title">搜索结果页</div>
+          <div class="phone-container">
+            <div class="notch"></div>
+            <iframe src="search_results.html" class="iframe-container"></iframe>
+          </div>
+        </div>
+
+        <!-- 详情页 -->
+        <div>
+          <div class="prototype-title">详情页</div>
+          <div class="phone-container">
+            <div class="notch"></div>
+            <iframe src="detail.html" class="iframe-container"></iframe>
+          </div>
+        </div>
+
+        <!-- 拍照结果页 -->
+        <div>
+          <div class="prototype-title">拍照结果页</div>
+          <div class="phone-container">
+            <div class="notch"></div>
+            <iframe src="photo_result.html" class="iframe-container"></iframe>
+          </div>
+        </div>
+
+        <!-- 相机页面 -->
+        <div>
+          <div class="prototype-title">相机页面</div>
+          <div class="phone-container">
+            <div class="notch"></div>
+            <iframe src="camera.html" class="iframe-container"></iframe>
+          </div>
+        </div>
+
+        <!-- 工具箱 -->
+        <div>
+          <div class="prototype-title">工具箱</div>
+          <div class="phone-container">
+            <div class="notch"></div>
+            <iframe src="toolbox.html" class="iframe-container"></iframe>
+          </div>
+        </div>
+
+        <!-- 历史记录 -->
+        <div>
+          <div class="prototype-title">历史记录</div>
+          <div class="phone-container">
+            <div class="notch"></div>
+            <iframe src="history.html" class="iframe-container"></iframe>
+          </div>
+        </div>
+
+        <!-- 历史记录-存在订单 -->
+        <div>
+          <div class="prototype-title">历史记录-存在订单</div>
+          <div class="phone-container">
+            <div class="notch"></div>
+            <iframe src="history_with_records.html" class="iframe-container"></iframe>
+          </div>
+        </div>
+
+        <!-- 个人中心 -->
+        <div>
+          <div class="prototype-title">个人中心</div>
+          <div class="phone-container">
+            <div class="notch"></div>
+            <iframe src="profile.html" class="iframe-container"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -20,3 +20,7 @@ dist
 *.njsproj
 *.sln
 *.sw?
+
+# Auto-generated files
+auto-imports.d.ts
+.eslintrc-auto-import.json

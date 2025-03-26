@@ -1,9 +1,17 @@
+/*
+ * @Author: moxunjingmu
+ * @Date: 2025-03-24 22:17:04
+ * @Description:
+ */
 import { defineConfig, UserConfig, ConfigEnv, loadEnv } from "vite";
 import uni from "@dcloudio/vite-plugin-uni";
+import { resolve } from "path";
 import AutoImport from "unplugin-auto-import/vite";
-
+function pathResolve(dir: string) {
+  return resolve(process.cwd(), ".", dir);
+}
 export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => {
-  const UnoCss = await import("unocss/vite").then(i => i.default);
+  const UnoCss = await import("unocss/vite").then((i) => i.default);
   const env = loadEnv(mode, process.cwd());
 
   return {
@@ -15,10 +23,20 @@ export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => 
       proxy: {
         [env.VITE_APP_BASE_API]: {
           target: env.VITE_APP_API_URL, // 目标服务器
-          changeOrigin: true,           // 支持跨域
+          changeOrigin: true, // 支持跨域
           rewrite: (path) => path.replace(new RegExp("^" + env.VITE_APP_BASE_API), ""), // 去掉前缀
         },
       },
+    },
+    // 路径重定向
+    resolve: {
+      alias: [
+        {
+          find: "@",
+          replacement: pathResolve("src"),
+        },
+      ],
+      dedupe: ["vue"],
     },
     plugins: [
       uni(),

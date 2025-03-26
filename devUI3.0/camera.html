@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>相机 - 证件照小程序</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        height: 100vh;
+        background-color: #000;
+        overflow: hidden;
+        color: white;
+      }
+      .status-bar {
+        height: 44px;
+        background-color: #000;
+        position: relative;
+        z-index: 10;
+      }
+      .camera-frame {
+        position: relative;
+        width: 100%;
+        height: calc(100vh - 200px);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .guide-frame {
+        position: absolute;
+        width: 80%;
+        height: 80%;
+        border: 2px dashed rgba(255, 255, 255, 0.7);
+        border-radius: 10px;
+        z-index: 2;
+      }
+      .head-guide {
+        position: absolute;
+        width: 40%;
+        height: 40%;
+        border: 2px dashed rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+      }
+      .camera-controls {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 150px;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .camera-button {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .camera-button::after {
+        content: "";
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 2px solid #000;
+      }
+      .camera-option {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+      }
+      .guide-text {
+        position: absolute;
+        top: 5%;
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: white;
+        font-size: 14px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 状态栏 -->
+    <div class="status-bar flex items-center px-4">
+      <a href="detail.html" class="text-white">
+        <i class="fas fa-chevron-left mr-2"></i>
+      </a>
+      <div class="text-sm font-medium">拍摄护照照片</div>
+    </div>
+
+    <!-- 相机取景框 -->
+    <div class="camera-frame">
+      <!-- 引导文字 -->
+      <div class="guide-text">请将面部对准虚线框内，保持光线充足</div>
+
+      <!-- 引导框 -->
+      <div class="guide-frame"></div>
+      <div class="head-guide"></div>
+
+      <!-- 模拟相机预览 -->
+      <div class="absolute inset-0 bg-gray-900 opacity-60"></div>
+    </div>
+
+    <!-- 相机控制区 -->
+    <div class="camera-controls">
+      <div class="camera-option">
+        <i class="fas fa-bolt"></i>
+        <!-- 闪光灯 -->
+      </div>
+
+      <div class="camera-button" onclick="window.location.href='photo_result.html'">
+        <!-- 拍照按钮 -->
+      </div>
+
+      <div class="camera-option">
+        <i class="fas fa-sync-alt"></i>
+        <!-- 切换摄像头 -->
+      </div>
+    </div>
+  </body>
+</html>

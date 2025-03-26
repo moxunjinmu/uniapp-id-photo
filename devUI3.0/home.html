@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>首页 - 证件照小程序</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        height: 100vh;
+        background-color: #f7f7f7;
+        overflow: hidden;
+      }
+      .status-bar {
+        height: 44px;
+        background-color: #f7f7f7;
+        position: relative;
+        z-index: 10;
+      }
+      .search-bar:focus {
+        outline: none;
+      }
+      .bottom-nav {
+        border-top: 1px solid #eaeaea;
+        background-color: white;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #999;
+      }
+      .bottom-nav-item.active {
+        color: #6366f1;
+      }
+      .bottom-nav-icon {
+        font-size: 24px;
+        margin-bottom: 2px;
+      }
+      .banner {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        padding: 15px;
+        border-radius: 12px;
+        margin: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .tool-item {
+        background-color: #f0f0ff;
+        border-radius: 16px;
+        padding: 15px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition:
+          box-shadow 0.3s ease,
+          transform 0.3s ease;
+      }
+      .card-zoom {
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .card-zoom:active {
+        transform: scale(0.95);
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+      .card-zoom.active {
+        transform: scale(1.05);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .tool-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #e0e7ff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 8px;
+        color: #6366f1;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 状态栏 -->
+    <div class="status-bar flex items-center justify-between px-4">
+      <div class="text-sm">首页</div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="pb-20 overflow-auto h-full">
+      <!-- 顶部宣传 -->
+      <div class="banner">
+        <h2 class="text-lg font-bold mb-1">证件照工作室</h2>
+        <p class="text-sm opacity-90">一键生成各种规格证件照</p>
+      </div>
+
+      <!-- 搜索栏 -->
+      <div class="mx-4 my-3 relative">
+        <div class="bg-gray-100 rounded-full flex items-center px-4 py-2">
+          <i class="fas fa-search text-gray-400 mr-2"></i>
+          <input type="text" placeholder="搜索证件照尺寸..." class="bg-transparent w-full text-sm search-bar" />
+        </div>
+      </div>
+
+      <!-- 功能区 -->
+      <div class="mx-4 mt-4">
+        <div class="flex">
+          <!-- 左侧 - 拍摄证件照 -->
+          <div class="w-1/2 pr-2">
+            <div
+              class="bg-indigo-50 rounded-xl p-4 h-40 flex flex-col justify-between transition-all duration-300 shadow-lg card-zoom"
+              onclick="toggleZoom(this); setTimeout(() => window.location.href='search_results.html', 300);">
+              <div>
+                <div class="flex items-center mb-2">
+                  <div class="bg-indigo-100 w-10 h-10 rounded-full flex items-center justify-center mr-2">
+                    <i class="fas fa-camera text-indigo-500"></i>
+                  </div>
+                  <h3 class="font-bold text-gray-800">拍摄证件照</h3>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">一键生成标准证件照</p>
+              </div>
+              <!-- 功能图标预览 -->
+              <div class="flex justify-between mt-2">
+                <div class="text-xs text-indigo-500 font-medium">
+                  点击开始
+                  <i class="fas fa-chevron-right ml-1"></i>
+                </div>
+                <div class="flex space-x-1">
+                  <div class="w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-id-card text-indigo-500 text-xs"></i>
+                  </div>
+                  <div class="w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user text-indigo-500 text-xs"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右侧 - 工具箱 -->
+          <div class="w-1/2 pl-2">
+            <div
+              class="bg-purple-50 rounded-xl p-4 h-40 flex flex-col justify-between transition-all duration-300 shadow-lg card-zoom"
+              onclick="toggleZoom(this); setTimeout(() => window.location.href='toolbox.html', 300);">
+              <div>
+                <div class="flex items-center mb-2">
+                  <div class="bg-purple-100 w-10 h-10 rounded-full flex items-center justify-center mr-2">
+                    <i class="fas fa-toolbox text-purple-500"></i>
+                  </div>
+                  <h3 class="font-bold text-gray-800">工具箱</h3>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">完美证件照所需的所有工具</p>
+              </div>
+
+              <!-- 工具图标预览 -->
+              <div class="grid grid-cols-3 gap-1 mt-2">
+                <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center">
+                  <i class="fas fa-image text-purple-500 text-xs"></i>
+                </div>
+                <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center">
+                  <i class="fas fa-palette text-purple-500 text-xs"></i>
+                </div>
+                <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center">
+                  <i class="fas fa-crop text-purple-500 text-xs"></i>
+                </div>
+                <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center">
+                  <i class="fas fa-print text-purple-500 text-xs"></i>
+                </div>
+                <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center">
+                  <i class="fas fa-ruler text-purple-500 text-xs"></i>
+                </div>
+                <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center">
+                  <i class="fas fa-magic text-purple-500 text-xs"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 热门尺寸 -->
+      <div class="mx-4 mt-4">
+        <h3 class="font-bold text-gray-800 mb-3">热门尺寸</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <div
+            class="bg-white rounded-xl p-3 shadow-lg transition-all duration-300 card-zoom"
+            onclick="toggleZoom(this); setTimeout(() => window.location.href='detail.html', 300);">
+            <div class="flex items-center">
+              <div class="bg-blue-100 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-id-card text-blue-500"></i>
+              </div>
+              <div>
+                <h4 class="font-medium text-sm">护照照片</h4>
+                <p class="text-xs text-gray-500">35×45mm</p>
+              </div>
+            </div>
+            <div class="text-xs text-gray-400 mt-2 flex justify-between items-center">
+              <span>标准尺寸</span>
+              <span class="bg-blue-50 text-blue-500 px-2 py-0.5 rounded-full text-xs">热门</span>
+            </div>
+          </div>
+
+          <div
+            class="bg-white rounded-xl p-3 shadow-lg transition-all duration-300 card-zoom"
+            onclick="toggleZoom(this);">
+            <div class="flex items-center">
+              <div class="bg-green-100 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-id-badge text-green-500"></i>
+              </div>
+              <div>
+                <h4 class="font-medium text-sm">一寸照片</h4>
+                <p class="text-xs text-gray-500">25×35mm</p>
+              </div>
+            </div>
+            <div class="text-xs text-gray-400 mt-2 flex justify-between items-center">
+              <span>标准尺寸</span>
+              <span class="bg-green-50 text-green-500 px-2 py-0.5 rounded-full text-xs">热门</span>
+            </div>
+          </div>
+
+          <div
+            class="bg-white rounded-xl p-3 shadow-lg transition-all duration-300 card-zoom"
+            onclick="toggleZoom(this);">
+            <div class="flex items-center">
+              <div class="bg-amber-100 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-graduation-cap text-amber-500"></i>
+              </div>
+              <div>
+                <h4 class="font-medium text-sm">二寸照片</h4>
+                <p class="text-xs text-gray-500">35×49mm</p>
+              </div>
+            </div>
+            <div class="text-xs text-gray-400 mt-2">
+              <span>标准尺寸</span>
+            </div>
+          </div>
+
+          <div
+            class="bg-white rounded-xl p-3 shadow-lg transition-all duration-300 card-zoom"
+            onclick="toggleZoom(this);">
+            <div class="flex items-center">
+              <div class="bg-rose-100 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-user-tie text-rose-500"></i>
+              </div>
+              <div>
+                <h4 class="font-medium text-sm">小二寸照片</h4>
+                <p class="text-xs text-gray-500">35×45mm</p>
+              </div>
+            </div>
+            <div class="text-xs text-gray-400 mt-2">
+              <span>标准尺寸</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleZoom(element) {
+        // 第一阶段：按下效果已通过CSS :active伪类实现
+
+        // 第二阶段：延迟添加active类，实现弹起放大效果
+        setTimeout(() => {
+          element.classList.add("active");
+
+          // 防止多次点击
+          const allCards = document.querySelectorAll(".card-zoom");
+          allCards.forEach((card) => {
+            card.style.pointerEvents = "none";
+          });
+        }, 150); // 与第一阶段动画时长匹配
+      }
+    </script>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav flex justify-around items-center">
+      <a href="home.html" class="bottom-nav-item active">
+        <i class="fas fa-home bottom-nav-icon"></i>
+        <span>首页</span>
+      </a>
+      <a href="toolbox.html" class="bottom-nav-item">
+        <i class="fas fa-th-large bottom-nav-icon"></i>
+        <span>工具箱</span>
+      </a>
+      <a href="history.html" class="bottom-nav-item">
+        <i class="fas fa-history bottom-nav-icon"></i>
+        <span>历史</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item">
+        <i class="fas fa-user bottom-nav-icon"></i>
+        <span>我的</span>
+      </a>
+    </div>
+  </body>
+</html>

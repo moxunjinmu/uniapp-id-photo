@@ -1,10 +1,5 @@
 <template>
   <view class="home-container pb-20 overflow-auto h-full">
-    <!-- 状态栏 -->
-    <view class="status-bar flex items-center justify-between px-4 py-3">
-      <text class="text-32rpx font-medium">首页</text>
-    </view>
-
     <!-- 内容区域 -->
     <view class="pb-120rpx">
       <!-- 顶部宣传 -->

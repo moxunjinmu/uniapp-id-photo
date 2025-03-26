@@ -1,4 +1,4 @@
-import { PhotoType } from "@/store/modules/config";
+import { PhotoType } from "@/enums/PhotoType";
 
 export interface PhotoProcessorOptions {
   backgroundColor: string;

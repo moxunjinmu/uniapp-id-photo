@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>登录 - 证件照小程序</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        height: 100vh;
+        background-color: #f7f7f7;
+        overflow: hidden;
+      }
+      .status-bar {
+        height: 44px;
+        background-color: #f7f7f7;
+        position: relative;
+        z-index: 10;
+      }
+      .login-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .input-field {
+        background: #f0f0f0;
+        border-radius: 9999px;
+        padding: 12px 20px;
+      }
+      .countdown-btn {
+        background: #e0e7ff;
+        color: #6366f1;
+        border-radius: 9999px;
+        padding: 8px 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 状态栏 -->
+    <div class="status-bar flex items-center px-4">
+      <a href="home.html" class="text-gray-500">
+        <i class="fas fa-chevron-left mr-2"></i>
+      </a>
+      <div class="text-sm font-medium">登录/注册</div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="px-4 pt-8 pb-20 overflow-auto h-full">
+      <!-- 图片展示卡片 -->
+      <div class="image-card login-card mb-6">
+        <div id="dynamic-bg" class="w-full aspect-[16/9] bg-gray-100 rounded-2xl overflow-hidden"></div>
+      </div>
+
+      <div class="login-card p-6">
+        <h2 class="text-xl font-bold mb-6">手机号登录</h2>
+
+        <!-- 手机号输入 -->
+        <div class="mb-4">
+          <div class="input-field flex items-center">
+            <i class="fas fa-mobile-alt text-gray-400 mr-2"></i>
+            <input
+              type="tel"
+              placeholder="请输入手机号"
+              class="w-full bg-transparent focus:outline-none"
+              maxlength="11" />
+          </div>
+        </div>
+
+        <!-- 验证码输入 -->
+        <div class="mb-6">
+          <div class="flex gap-2">
+            <div class="input-field flex-1 flex items-center">
+              <i class="fas fa-sms text-gray-400 mr-2"></i>
+              <input type="text" placeholder="验证码" class="w-full bg-transparent focus:outline-none" maxlength="6" />
+            </div>
+            <button class="countdown-btn text-sm font-medium">获取验证码</button>
+          </div>
+        </div>
+
+        <!-- 登录卡片 -->
+        <button
+          class="w-full bg-indigo-500 text-white rounded-full py-3 font-medium hover:bg-indigo-600 active:scale-95 transition-all duration-200">
+          立即登录
+        </button>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav flex justify-around items-center">
+      <a href="home.html" class="bottom-nav-item">
+        <i class="fas fa-home bottom-nav-icon"></i>
+        <span>首页</span>
+      </a>
+      <a href="toolbox.html" class="bottom-nav-item">
+        <i class="fas fa-th-large bottom-nav-icon"></i>
+        <span>工具箱</span>
+      </a>
+      <a href="history.html" class="bottom-nav-item">
+        <i class="fas fa-history bottom-nav-icon"></i>
+        <span>历史</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item">
+        <i class="fas fa-user bottom-nav-icon"></i>
+        <span>我的</span>
+      </a>
+    </div>
+    <style>
+      .image-card {
+        position: relative;
+      }
+      #dynamic-bg {
+        transition: opacity 0.3s ease;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const bgContainer = document.getElementById("dynamic-bg");
+        const card = document.querySelector(".image-card");
+        const cardWithMargin = document.querySelector(".image-card");
+        const rect = cardWithMargin.getBoundingClientRect();
+
+        const width = Math.floor(rect.width * 2);
+        const height = Math.floor(rect.height * 2);
+        bgContainer.style.backgroundImage = `url(https://picsum.photos/${width}/${height})`;
+      });
+    </script>
+  </body>
+</html>

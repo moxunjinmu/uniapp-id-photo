@@ -1,12 +1,4 @@
 <template>
-  <!-- 状态栏 -->
-  <view class="status-bar flex items-center px-4">
-    <view @click="goBack" class="text-gray-500">
-      <IconFont name="chevron-left" class="mr-2" />
-    </view>
-    <view class="text-sm font-medium">登录/注册</view>
-  </view>
-
   <!-- 内容区域 -->
   <view class="px-4 pt-8 pb-20 overflow-auto h-full">
     <!-- 图片展示卡片 -->
@@ -79,11 +71,6 @@ let timer: number | null = null;
 
 // 使用 pinia
 const userStore = useUserStore();
-
-// 返回上一页
-const goBack = () => {
-  uni.navigateBack();
-};
 
 // 获取验证码
 const getSmsCode = () => {

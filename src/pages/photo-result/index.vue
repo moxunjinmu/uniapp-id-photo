@@ -285,6 +285,7 @@ onLoad((options: any) => {
   // 获取路由参数
   photoTypeId.value = options.id || "";
   rawImgPath.value = decodeURIComponent(options.imgPath || "");
+  console.log("options", options);
 
   if (photoTypeId.value) {
     photoType.value = handlePhotoType(photoTypeId.value);

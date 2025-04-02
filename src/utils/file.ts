@@ -7,6 +7,40 @@
  * 跨平台文件操作工具
  */
 
+const fsReadFile = (filePath: string): Promise<ArrayBuffer> => {
+  // 微信小程序环境下，使用文件系统管理器
+  return new Promise((resolve, reject) => {
+    const fs = uni.getFileSystemManager();
+    fs.readFile({
+      filePath: filePath,
+      success: (res: any) => {
+        resolve(res.data as ArrayBuffer);
+      },
+      fail: (err: any) => {
+        console.error("读取文件失败:", err);
+        reject(err);
+      },
+    });
+  });
+};
+
+const uniRequest = (filePath: string): Promise<ArrayBuffer> => {
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url: `${filePath}`,
+      method: "GET",
+      responseType: "arraybuffer",
+      success: (res) => {
+        resolve(res.data as ArrayBuffer);
+      },
+      fail: (err) => {
+        console.error("请求文件失败:", err);
+        reject(err);
+      },
+    });
+  });
+};
+
 /**
  * 读取文件内容
  * @param filePath 文件路径
@@ -14,21 +48,25 @@
  */
 export async function readFile(filePath: string): Promise<ArrayBuffer> {
   try {
-    // 使用uni.request替代fetch
-    return new Promise((resolve, reject) => {
-      uni.request({
-        url: filePath,
-        method: "GET",
-        responseType: "arraybuffer",
-        success: (res) => {
-          resolve(res.data as ArrayBuffer);
-        },
-        fail: (err) => {
-          console.error("请求文件失败:", err);
-          reject(err);
-        },
-      });
-    });
+    if (!filePath) {
+      throw new Error("文件路径不能为空");
+    }
+
+    // 获取平台信息
+    const platform = uni.getSystemInfoSync()?.platform || "h5";
+
+    // 获取系统信息判断环境
+    const isDevTool = platform === "devtools"; // 微信开发工具环境判断
+    const isAndroid = platform === "android";
+    const isWeiXin = platform === "mp-weixin";
+    console.log("环境", platform);
+
+    if (isDevTool || isWeiXin || isAndroid) {
+      // #ifdef MP-WEIXIN
+      return fsReadFile(filePath);
+      // #endif
+    }
+    return uniRequest(filePath);
   } catch (error) {
     console.error("读取文件失败: ", error);
     throw error;

@@ -76,21 +76,7 @@ export async function readFile(filePath: string): Promise<ArrayBuffer> {
 const saveFsFile = (data: ArrayBuffer, fileName: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     const fs = uni.getFileSystemManager();
-    let tempDir = uni.getStorageSync("tempFilePath") || "";
-
-    if (!tempDir) {
-      try {
-        tempDir = "/temp";
-        fs.mkdirSync(tempDir, true);
-      } catch (pathError) {
-        console.error("创建临时目录失败，使用默认路径", pathError);
-        tempDir = "/temp";
-      }
-      uni.setStorageSync("tempFilePath", tempDir);
-    }
-    // #ifdef MP-WEIXIN
-    tempDir = wx.env.USER_DATA_PATH;
-    // #endif
+    const tempDir = wx.env.USER_DATA_PATH;
     const filePath = `${tempDir}/${fileName}`;
     fs.writeFile({
       filePath,

@@ -13,10 +13,13 @@
             <!-- 照片示例 -->
             <view class="w-1/3 mr-4">
               <view
-                class="relative shadow-lg hover:shadow-xl transition-shadow duration-300"
-                style="width: 100%; aspect-ratio: 295/413">
-                <view class="absolute inset-0 rounded-sm" :style="{ backgroundColor: selectedBackgroundColor }"></view>
-                <view class="absolute inset-0 border-8 border-white rounded-sm"></view>
+                class="relative shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-sm"
+                :style="{
+                  width: '100%',
+                  aspectRatio: `${photoType?.pixelWidth || 295}/${photoType?.pixelHeight || 413}`,
+                  backgroundColor: selectedBackgroundColor,
+                }">
+                <view class="absolute inset-0 border-12 border-white border-solid shadow-inner"></view>
               </view>
             </view>
 
@@ -293,12 +296,13 @@ onLoad((options: any) => {
 }
 
 .color-option {
-  width: 48rpx;
-  height: 48rpx;
+  width: 40rpx;
+  height: 40rpx;
   border-radius: 50%;
   border: 2rpx solid white;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .color-selected {

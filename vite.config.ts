@@ -27,8 +27,8 @@ export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => 
           rewrite: (path) => path.replace(new RegExp("^" + env.VITE_APP_BASE_API), ""), // 去掉前缀
         },
         // 添加 remove.bg API 代理
-        "/v1.0/removebg": {
-          target: "https://api.remove.bg",
+        "/prod-api/v1.0/removebg": {
+          target: "https://api.remove.bg/v1.0/removebg",
           changeOrigin: true,
           secure: true,
         },

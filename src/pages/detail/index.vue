@@ -130,13 +130,13 @@ import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
 import { useCameraController } from "@/hooks/useCameraController";
-import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
+// import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
 import { useToast } from "@/hooks/useToast";
 import { PhotoType } from "@/enums/PhotoType";
 
 const configStore = useConfigStore();
 const { chooseFromAlbum } = useCameraController();
-const { changeBackgroundColor } = usePhotoProcessor();
+// const { changeBackgroundColor } = usePhotoProcessor();
 const { showToast, showLoading, hideLoading } = useToast();
 // 获取照片类型ID
 const photoTypeId = ref("");
@@ -144,6 +144,13 @@ const photoType = ref<PhotoType | null>(null);
 // 背景色相关
 const backgroundColors = ref<Array<{ name: string; value: string }>>(configStore.backgroundColors);
 const selectedBackgroundColor = ref<string>("#2196F3"); // 默认蓝色背景
+
+// 预览图片样式
+const previewImageStyle = ref({
+  width: "100%",
+  height: "100%",
+  backgroundColor: "#FFFFFF",
+});
 
 // 获取用途文本
 const getUsageText = (id: string) => {
@@ -199,8 +206,12 @@ const handleChangeBackgroundColor = async (color: string) => {
   selectedBackgroundColor.value = color;
 
   try {
-    // 实际项目中，这里应该调用真实的背景色更换API
-    await changeBackgroundColor("", color); // 这里传空字符串，因为我们只是在预览阶段
+    // 直接更新预览图片的背景色
+    previewImageStyle.value = {
+      ...previewImageStyle.value,
+      backgroundColor: color,
+    };
+
     hideLoading();
     showToast("背景色更换成功");
   } catch (error: any) {

@@ -247,14 +247,14 @@ const handleProcessPhoto = async () => {
       backgroundColor: selectedBackgroundColor.value,
       photoType: photoType.value,
     });
-
-    imgPath.value = result.photoUrl;
-
+    console.log("照片处理结果：", result);
+    imgPath.value = result.thumbnailUrl;
+    console.log("照片处理结果：", result.photoUrl);
     // 根据预览模式决定是否需要创建排版
     if (previewMode.value === PreviewMode.Layout) {
       layoutImagePath.value = await generatePhotoLayout(result.photoUrl, 4);
     }
-
+    console.log("排版图片路径：", layoutImagePath.value);
     hideLoading();
   } catch (error) {
     hideLoading();

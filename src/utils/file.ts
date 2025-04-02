@@ -71,6 +71,8 @@ export async function saveFile(data: ArrayBuffer, fileName: string): Promise<str
       }
 
       const filePath = `${tempDir}/${fileName}`;
+      console.log("保存文件路径", filePath);
+
       fs.writeFile({
         filePath,
         data,

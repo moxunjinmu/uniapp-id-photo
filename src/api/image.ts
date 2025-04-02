@@ -69,13 +69,20 @@ export function removeBackground(imageUrl: string, options: RemoveBackgroundOpti
           header: { "X-API-Key": API_KEY },
           data: apiData,
           responseType: "arraybuffer",
-          success: (response) => {
-            saveFile(response.data as ArrayBuffer, `bg_removed_${Date.now()}.png`)
-              .then(resolve)
-              .catch(reject);
-          },
-          fail: reject,
-        });
+        })
+          .then((response: any) => {
+            console.log("图片处理成功", response);
+            saveFile(
+              (response as UniApp.RequestSuccessCallbackResult).data as ArrayBuffer,
+              `bg_removed_${Date.now()}.png`,
+            )
+              .then((filePath) => resolve(filePath))
+              .catch((err) => reject(err));
+          })
+          .catch((error) => {
+            showToast("处理图片失败");
+            reject(error);
+          });
       });
     })
     .catch((error) => {

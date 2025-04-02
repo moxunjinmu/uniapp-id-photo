@@ -6,7 +6,7 @@
 export type EnvType = "development" | "production" | "preview";
 
 // 获取当前环境
-const currentEnv = (uni.getSystemInfoSync().platform === "h5" ? "development" : "production") as EnvType;
+const currentEnv = import.meta.env.VITE_APP_ENV as EnvType;
 
 // 环境配置
 export const env = {

@@ -81,6 +81,7 @@ export function usePhotoProcessor() {
       if (import.meta.env.VITE_APP_ENV === "production") {
         // 使用真实API
         processedImageUrl = await removeBackground(imageUrl, apiOptions);
+        console.log("真实环境使用API", { imageUrl, apiOptions });
       } else {
         // 模拟API调用
         console.log("开发环境使用模拟API");
@@ -91,6 +92,7 @@ export function usePhotoProcessor() {
       // 在真实项目中，应该有一个专门的缩略图生成函数
       // 这里简单处理，实际应该对照片进行等比例缩小
       const thumbnailUrl = processedImageUrl;
+      console.log("生成缩略图", { thumbnailUrl });
 
       return {
         photoUrl: processedImageUrl,
@@ -181,6 +183,7 @@ export function usePhotoProcessor() {
       }
 
       if (import.meta.env.VITE_APP_ENV === "production") {
+        console.log("请求地址:", "https://api.remove.bg/v1.0/removebg");
         // 使用真实API
         return await changeBackground(photoUrl, backgroundColor, apiOptions);
       } else {

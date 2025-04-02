@@ -85,12 +85,10 @@ export function usePhotoProcessor() {
       const fileData = await readFile(imageUrl);
       const base64 = uni.arrayBufferToBase64(fileData as ArrayBuffer);
       apiOptions.image_file_b64 = base64;
-      if (import.meta.env.VITE_APP_ENV === "production" || platform === "mp-weixin") {
+      if (import.meta.env.VITE_APP_ENV === "production" || platform === "android" || platform === "devtools") {
         // 使用真实API
         const res = await removeBackground(apiOptions);
-        console.log("processedImageUrl", res);
         processedImageUrl = await saveFile(res, `bg_removed_${Date.now()}.png`);
-        console.log("真实环境使用API", { imageUrl, apiOptions });
       } else {
         // 模拟API调用
         console.log("开发环境使用模拟API");

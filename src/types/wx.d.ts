@@ -20,4 +20,8 @@ declare namespace WechatMiniprogram {
 
 declare const wx: {
   getFileSystemManager(): WechatMiniprogram.FileSystemManager;
+  env: {
+    USER_DATA_PATH: string;
+    [key: string]: any;
+  };
 };

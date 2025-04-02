@@ -14,6 +14,7 @@ export interface PhotoType {
   isPopular: boolean;
   icon: string;
   backgroundColor: string;
+  tips?: string[];
 }
 
 // 照片背景色类型

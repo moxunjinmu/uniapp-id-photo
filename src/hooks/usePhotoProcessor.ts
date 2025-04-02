@@ -1,5 +1,12 @@
 import { PhotoType } from "@/enums/PhotoType";
-import { removeBackground, changeBackgroundColor as changeBackground, mockRemoveBackground } from "@/api/image";
+import {
+  removeBackground,
+  changeBackgroundColor as changeBackground,
+  mockRemoveBackground,
+  createPhotoLayout,
+  addWatermark,
+  RemoveBackgroundOptions,
+} from "@/api/image";
 import { useToast } from "./useToast";
 
 export interface PhotoProcessorOptions {
@@ -21,22 +28,67 @@ export function usePhotoProcessor() {
    * @param options 处理选项
    */
   const processPhoto = async (imageUrl: string, options: PhotoProcessorOptions): Promise<PhotoProcessResult> => {
-    const { backgroundColor } = options;
+    const { backgroundColor, photoType } = options;
 
     try {
+      // 根据证件照类型设置适当的API参数
+      const apiOptions: RemoveBackgroundOptions = {
+        bg_color: backgroundColor,
+        size: "auto",
+        type: "person", // 证件照主要是人像
+        format: "png", // 透明背景最好用PNG
+        crop: true, // 裁剪空白区域
+        semitransparency: false, // 证件照不需要半透明
+      };
+
+      // 根据证件照类型调整参数
+      if (photoType) {
+        // 根据证件照尺寸设置合适的输出尺寸
+        if (photoType.pixelWidth && photoType.pixelHeight) {
+          // 如果证件照尺寸较小（小于1000像素），使用较小的输出尺寸以提高处理速度
+          if (photoType.pixelWidth < 1000 || photoType.pixelHeight < 1000) {
+            apiOptions.size = "small";
+          } else if (photoType.pixelWidth > 2000 || photoType.pixelHeight > 2000) {
+            // 如果证件照尺寸较大，使用高清输出
+            apiOptions.size = "hd";
+          }
+        }
+
+        // 设置裁剪边距，根据证件照类型调整
+        // 一寸、二寸等标准证件照通常需要较小的边距
+        if (photoType.category === "standard") {
+          apiOptions.crop_margin = "0";
+        } else {
+          // 其他类型可以保留一些边距
+          apiOptions.crop_margin = "10";
+        }
+
+        // 根据证件照类型设置缩放比例
+        // 确保输出图像符合证件照的尺寸要求
+        if (photoType.pixelWidth && photoType.pixelHeight) {
+          const targetSize = Math.max(photoType.pixelWidth, photoType.pixelHeight);
+          if (targetSize < 500) {
+            apiOptions.scale = "50%"; // 小尺寸证件照
+          } else if (targetSize > 1500) {
+            apiOptions.scale = "100%"; // 大尺寸证件照
+          }
+        }
+      }
+
       // 生产环境使用真实API，开发环境使用模拟API
       let processedImageUrl;
       if (import.meta.env.PROD) {
         // 使用真实API
-        processedImageUrl = await removeBackground(imageUrl, {
-          bg_color: backgroundColor,
-        });
+        processedImageUrl = await removeBackground(imageUrl, apiOptions);
       } else {
-        // 使用模拟API
+        // 模拟API调用
+        console.log("开发环境使用模拟API");
         processedImageUrl = await mockRemoveBackground(imageUrl);
       }
 
-      // 生成缩略图 (实际项目中应该有专门的缩略图生成函数)
+      // 生成缩略图
+      // 在真实项目中，应该有一个专门的缩略图生成函数
+      // 这里简单处理，实际应该对照片进行等比例缩小
       const thumbnailUrl = processedImageUrl;
 
       return {
@@ -55,10 +107,20 @@ export function usePhotoProcessor() {
    * @param photoUrl 照片URL
    * @param count 排版数量（张数）
    */
-  const generatePhotoLayout = (photoUrl: string, count: 4 | 8 | 12 = 4): string => {
-    // 模拟生成排版预览
-    console.log("生成照片排版", { photoUrl, count });
-    return photoUrl; // 实际项目中应该返回排版后的图片URL
+  const generatePhotoLayout = async (photoUrl: string, count: 4 | 8 | 12 = 4): Promise<string> => {
+    try {
+      if (import.meta.env.PROD) {
+        return await createPhotoLayout(photoUrl, count);
+      } else {
+        // 模拟排版生成
+        console.log("模拟生成照片排版", { photoUrl, count });
+        return photoUrl;
+      }
+    } catch (error: any) {
+      console.error("生成排版失败:", error.message);
+      showToast("生成排版失败，请重试");
+      throw error;
+    }
   };
 
   /**
@@ -66,10 +128,20 @@ export function usePhotoProcessor() {
    * @param photoUrl 照片URL
    * @param text 水印文本
    */
-  const addWatermark = (photoUrl: string, text: string): string => {
-    // 模拟添加水印
-    console.log("添加水印", { photoUrl, text });
-    return photoUrl; // 实际项目中应该返回添加水印后的图片URL
+  const addWatermarkToPhoto = async (photoUrl: string, text: string): Promise<string> => {
+    try {
+      if (import.meta.env.PROD) {
+        return await addWatermark(photoUrl, text);
+      } else {
+        // 模拟水印添加
+        console.log("模拟添加水印", { photoUrl, text });
+        return photoUrl;
+      }
+    } catch (error: any) {
+      console.error("添加水印失败:", error.message);
+      showToast("添加水印失败");
+      return photoUrl; // 水印失败仍然返回原图
+    }
   };
 
   /**
@@ -77,13 +149,42 @@ export function usePhotoProcessor() {
    * @param photoUrl 照片URL
    * @param backgroundColor 背景色
    */
-  const changeBackgroundColor = async (photoUrl: string, backgroundColor: string): Promise<string> => {
+  const changeBackgroundColor = async (
+    photoUrl: string,
+    backgroundColor: string,
+    photoType?: PhotoType,
+  ): Promise<string> => {
     try {
+      // 准备API参数
+      const apiOptions: RemoveBackgroundOptions = {
+        format: "png", // 透明背景最好用PNG
+      };
+
+      // 如果提供了photoType，根据证件照类型调整参数
+      if (photoType) {
+        // 设置裁剪边距，根据证件照类型调整
+        if (photoType.category === "standard") {
+          apiOptions.crop_margin = "0";
+        } else {
+          apiOptions.crop_margin = "10";
+        }
+
+        // 根据证件照尺寸设置合适的输出尺寸
+        if (photoType.pixelWidth && photoType.pixelHeight) {
+          if (photoType.pixelWidth < 1000 || photoType.pixelHeight < 1000) {
+            apiOptions.size = "small";
+          } else if (photoType.pixelWidth > 2000 || photoType.pixelHeight > 2000) {
+            apiOptions.size = "hd";
+          }
+        }
+      }
+
       if (import.meta.env.PROD) {
         // 使用真实API
-        return await changeBackground(photoUrl, backgroundColor);
+        return await changeBackground(photoUrl, backgroundColor, apiOptions);
       } else {
         // 开发环境使用模拟API
+        console.log("模拟更换背景色:", backgroundColor);
         return new Promise((resolve) => {
           setTimeout(() => {
             resolve(photoUrl);
@@ -97,10 +198,43 @@ export function usePhotoProcessor() {
     }
   };
 
+  /**
+   * 智能裁剪照片适应证件尺寸
+   * @param photoUrl 照片URL
+   * @param photoType 证件照类型
+   */
+  const cropPhotoToSize = async (photoUrl: string, photoType: PhotoType): Promise<string> => {
+    try {
+      // 准备裁剪参数，使用证件照的尺寸比例
+      const ratio = photoType.width / photoType.height;
+
+      // 根据证件照类型设置更多裁剪参数
+      const cropParams = {
+        ratio,
+        targetWidth: photoType.pixelWidth,
+        targetHeight: photoType.pixelHeight,
+        category: photoType.category,
+        // 根据证件照类型设置不同的裁剪策略
+        cropStrategy: photoType.category === "standard" ? "strict" : "flexible",
+      };
+
+      // 在实际项目中，这里应该使用Canvas对图片进行智能裁剪
+      // 作为示例，我们只打印参数
+      console.log("智能裁剪照片:", { photoUrl, ...cropParams });
+
+      return photoUrl; // 这里简单返回原图
+    } catch (error: any) {
+      console.error("裁剪照片失败:", error.message);
+      showToast("调整照片尺寸失败");
+      return photoUrl;
+    }
+  };
+
   return {
     processPhoto,
     generatePhotoLayout,
-    addWatermark,
+    addWatermark: addWatermarkToPhoto,
     changeBackgroundColor,
+    cropPhotoToSize,
   };
 }

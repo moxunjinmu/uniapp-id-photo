@@ -1,4 +1,6 @@
 import { PhotoType } from "@/enums/PhotoType";
+import { removeBackground, changeBackgroundColor as changeBackground, mockRemoveBackground } from "@/api/image";
+import { useToast } from "./useToast";
 
 export interface PhotoProcessorOptions {
   backgroundColor: string;
@@ -11,26 +13,41 @@ export interface PhotoProcessResult {
 }
 
 export function usePhotoProcessor() {
+  const { showToast } = useToast();
+
   /**
-   * 模拟生成证件照
+   * 处理证件照
    * @param imageUrl 原始照片路径
    * @param options 处理选项
    */
-  const processPhoto = (imageUrl: string, options: PhotoProcessorOptions): Promise<PhotoProcessResult> => {
-    const { backgroundColor, photoType } = options;
+  const processPhoto = async (imageUrl: string, options: PhotoProcessorOptions): Promise<PhotoProcessResult> => {
+    const { backgroundColor } = options;
 
-    return new Promise((resolve) => {
-      console.log("正在处理照片", { imageUrl, backgroundColor, photoType });
-
-      // 模拟API调用，延迟返回结果
-      setTimeout(() => {
-        // 实际项目中，这里应该是调用真实的照片处理API
-        resolve({
-          photoUrl: imageUrl, // 实际项目中这应该是处理后的照片URL
-          thumbnailUrl: imageUrl, // 实际项目中这应该是缩略图URL
+    try {
+      // 生产环境使用真实API，开发环境使用模拟API
+      let processedImageUrl;
+      if (import.meta.env.PROD) {
+        // 使用真实API
+        processedImageUrl = await removeBackground(imageUrl, {
+          bg_color: backgroundColor,
         });
-      }, 1500);
-    });
+      } else {
+        // 使用模拟API
+        processedImageUrl = await mockRemoveBackground(imageUrl);
+      }
+
+      // 生成缩略图 (实际项目中应该有专门的缩略图生成函数)
+      const thumbnailUrl = processedImageUrl;
+
+      return {
+        photoUrl: processedImageUrl,
+        thumbnailUrl,
+      };
+    } catch (error: any) {
+      console.error("处理照片失败:", error.message);
+      showToast("处理照片失败，请重试");
+      throw error;
+    }
   };
 
   /**
@@ -60,15 +77,24 @@ export function usePhotoProcessor() {
    * @param photoUrl 照片URL
    * @param backgroundColor 背景色
    */
-  const changeBackgroundColor = (photoUrl: string, backgroundColor: string): Promise<string> => {
-    return new Promise((resolve) => {
-      console.log("更换背景色", { photoUrl, backgroundColor });
-
-      // 模拟API调用
-      setTimeout(() => {
-        resolve(photoUrl); // 实际项目中应该返回更换背景色后的图片URL
-      }, 800);
-    });
+  const changeBackgroundColor = async (photoUrl: string, backgroundColor: string): Promise<string> => {
+    try {
+      if (import.meta.env.PROD) {
+        // 使用真实API
+        return await changeBackground(photoUrl, backgroundColor);
+      } else {
+        // 开发环境使用模拟API
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(photoUrl);
+          }, 800);
+        });
+      }
+    } catch (error: any) {
+      console.error("更换背景色失败:", error.message);
+      showToast("更换背景色失败，请重试");
+      throw error;
+    }
   };
 
   return {

@@ -1,13 +1,14 @@
 import { PhotoType } from "@/enums/PhotoType";
 import {
   removeBackground,
-  changeBackgroundColor as changeBackground,
+  // changeBackgroundColor as changeBackground,
   mockRemoveBackground,
   createPhotoLayout,
   addWatermark,
-  RemoveBackgroundOptions,
 } from "@/api/image";
+import { RemoveBackgroundOptions } from "@/enums";
 import { useToast } from "./useToast";
+import { readFile, saveFile } from "@/utils/file";
 
 export interface PhotoProcessorOptions {
   backgroundColor: string;
@@ -21,6 +22,8 @@ export interface PhotoProcessResult {
 
 export function usePhotoProcessor() {
   const { showToast } = useToast();
+  // 生产环境使用真实API，开发环境使用模拟API
+  let processedImageUrl;
 
   /**
    * 处理证件照
@@ -33,6 +36,7 @@ export function usePhotoProcessor() {
     try {
       // 根据证件照类型设置适当的API参数
       const apiOptions: RemoveBackgroundOptions = {
+        image_file_b64: "",
         bg_color: backgroundColor,
         size: "auto",
         type: "person", // 证件照主要是人像
@@ -75,12 +79,15 @@ export function usePhotoProcessor() {
         }
       }
 
-      // 生产环境使用真实API，开发环境使用模拟API
-      let processedImageUrl;
-
+      // 使用跨平台的文件读取函数
+      const fileData = await readFile(imageUrl);
+      const base64 = uni.arrayBufferToBase64(fileData as ArrayBuffer);
+      apiOptions.image_file_b64 = base64;
       if (import.meta.env.VITE_APP_ENV === "production") {
         // 使用真实API
-        processedImageUrl = await removeBackground(imageUrl, apiOptions);
+        const res = await removeBackground(apiOptions);
+        console.log("processedImageUrl", res);
+        processedImageUrl = await saveFile(res, `bg_removed_${Date.now()}.png`);
         console.log("真实环境使用API", { imageUrl, apiOptions });
       } else {
         // 模拟API调用
@@ -185,7 +192,9 @@ export function usePhotoProcessor() {
       if (import.meta.env.VITE_APP_ENV === "production") {
         console.log("请求地址:", "https://api.remove.bg/v1.0/removebg");
         // 使用真实API
-        return await changeBackground(photoUrl, backgroundColor, apiOptions);
+        // TODO
+        // return await changeBackground(photoUrl, backgroundColor, apiOptions);
+        return "String";
       } else {
         // 开发环境使用模拟API
         console.log("模拟更换背景色:", backgroundColor);

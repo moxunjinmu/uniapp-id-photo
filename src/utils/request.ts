@@ -1,5 +1,5 @@
 // src/utils/request.ts
-import { env } from "@/env";
+// import { env } from "@/env";
 /**
  * 请求函数封装
  * 基于 uni.request 封装的请求函数
@@ -9,47 +9,71 @@ interface RequestOptions extends UniApp.RequestOptions {
   timeout?: number;
 }
 
+// 响应数据结构
+
 // 基础配置
-// const BASE_URL = import.meta.env.VITE_APP_BASE_API || "";
+const BASE_URL = import.meta.env.VITE_APP_BASE_API || "";
 const TIMEOUT = 30000;
 
 /**
  * 请求函数
  * @param options 请求配置项
  */
-export function request(options: RequestOptions) {
-  const { url, method, data, header, responseType, timeout } = options;
+export function request<T>(options: RequestOptions): Promise<T> {
+  const token = uni.getStorageSync("token"); // 从本地缓存获取 token
+  const proxyUrl = options.baseUrl ? `${options.baseUrl}${options.url}` : `${BASE_URL}${options.url}`;
   return new Promise((resolve, reject) => {
-    // 打印代理后的实际请求地址
-    const proxyUrl = env.isProd ? `${env.api.baseUrl}${url}` : `/api${url}`;
-    console.log("代理请求地址:", proxyUrl);
-
     uni.request({
-      url: proxyUrl,
-      method: method || "GET",
+      ...options,
+      // VITE_APP_BASE_API 是在 Vite 项目的 .env.development 文件中配置的环境变量，使用代理标识，实际转发到真实 API
+      url: proxyUrl, // 示例: http://localhost:5173/dev-api/login
       header: {
-        "Content-Type": "application/json",
-        ...header,
+        ...options.header,
+        Authorization: token,
       },
-      data: data,
-      timeout: timeout || TIMEOUT,
-      responseType: responseType,
-      success: (res) => {
-        console.log("请求成功:", res);
-        console.log("options.responseType", responseType);
-        // 根据responseType处理响应数据
-        if (responseType === "arraybuffer") {
-          console.log("ArrayBuffer:", res.data);
-          resolve({
-            ...res,
-            data: res.data as ArrayBuffer,
-          });
-        } else {
-          resolve(res);
+      timeout: options.timeout || TIMEOUT,
+      success: (response) => {
+        try {
+          console.log("请求成功: ", response);
+
+          // 处理JSON响应
+          const resData = response.data as ResponseData<T>;
+          // 业务状态码 00000 表示成功
+          if (response.statusCode === 200) {
+            // 处理二进制数据
+            if (options.responseType === "arraybuffer") {
+              const resData = response.data as T;
+              console.log("请求成功: 处理二进制数据", resData);
+              resolve(resData);
+              console.log("请求成功: 处理二进制数据结束");
+              return;
+            }
+            resolve(resData.data);
+          } else {
+            uni.showToast({
+              title: resData.msg || "业务处理失败",
+              icon: "none",
+              duration: 2000,
+            });
+            reject({
+              message: resData.msg || "业务处理失败",
+              code: resData.code,
+            });
+          }
+        } catch (error: any) {
+          console.log("请求成功: 处理报错", error);
         }
       },
-      fail: (err) => {
-        reject(err);
+      fail: (error) => {
+        uni.showToast({
+          title: "网络请求失败",
+          icon: "none",
+          duration: 2000,
+        });
+        reject({
+          message: "网络请求失败",
+          error,
+        });
       },
     });
   });

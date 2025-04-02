@@ -40,7 +40,7 @@ export function usePhotoProcessor() {
         crop: true, // 裁剪空白区域
         semitransparency: false, // 证件照不需要半透明
       };
-
+      console.log("生产环境使用真实API", import.meta.env.VITE_APP_ENV);
       // 根据证件照类型调整参数
       if (photoType) {
         // 根据证件照尺寸设置合适的输出尺寸
@@ -77,7 +77,8 @@ export function usePhotoProcessor() {
 
       // 生产环境使用真实API，开发环境使用模拟API
       let processedImageUrl;
-      if (import.meta.env.PROD) {
+
+      if (import.meta.env.VITE_APP_ENV === "production") {
         // 使用真实API
         processedImageUrl = await removeBackground(imageUrl, apiOptions);
       } else {
@@ -109,7 +110,7 @@ export function usePhotoProcessor() {
    */
   const generatePhotoLayout = async (photoUrl: string, count: 4 | 8 | 12 = 4): Promise<string> => {
     try {
-      if (import.meta.env.PROD) {
+      if (import.meta.env.VITE_APP_ENV === "production") {
         return await createPhotoLayout(photoUrl, count);
       } else {
         // 模拟排版生成
@@ -130,7 +131,7 @@ export function usePhotoProcessor() {
    */
   const addWatermarkToPhoto = async (photoUrl: string, text: string): Promise<string> => {
     try {
-      if (import.meta.env.PROD) {
+      if (import.meta.env.VITE_APP_ENV === "production") {
         return await addWatermark(photoUrl, text);
       } else {
         // 模拟水印添加
@@ -159,7 +160,7 @@ export function usePhotoProcessor() {
       const apiOptions: RemoveBackgroundOptions = {
         format: "png", // 透明背景最好用PNG
       };
-
+      console.log("生产环境使用真实更换背景色API", import.meta.env.VITE_APP_ENV);
       // 如果提供了photoType，根据证件照类型调整参数
       if (photoType) {
         // 设置裁剪边距，根据证件照类型调整
@@ -179,7 +180,7 @@ export function usePhotoProcessor() {
         }
       }
 
-      if (import.meta.env.PROD) {
+      if (import.meta.env.VITE_APP_ENV === "production") {
         // 使用真实API
         return await changeBackground(photoUrl, backgroundColor, apiOptions);
       } else {

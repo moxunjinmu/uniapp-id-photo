@@ -1,3 +1,8 @@
+/*
+ * @Author: moxunjinmu
+ * @Date: 2025-04-02 16:28:56
+ * @Description:
+ */
 /**
  * 跨平台文件操作工具
  */
@@ -8,7 +13,14 @@
  * @returns Promise<ArrayBuffer> 文件内容
  */
 export async function readFile(filePath: string): Promise<ArrayBuffer> {
-  if (uni.getSystemInfoSync().platform === "h5") {
+  // 检查当前环境
+  console.log("当前环境", uni.getSystemInfoSync().platform);
+  if (
+    uni.getSystemInfoSync().platform === "h5" ||
+    uni.getSystemInfoSync().platform === "windows" ||
+    uni.getSystemInfoSync().platform === "ios" ||
+    uni.getSystemInfoSync().platform === "android"
+  ) {
     // H5环境下使用fetch
     const response = await fetch(filePath);
     return await response.arrayBuffer();
@@ -32,7 +44,12 @@ export async function readFile(filePath: string): Promise<ArrayBuffer> {
  * @returns Promise<string> 保存后的文件路径
  */
 export async function saveFile(data: ArrayBuffer, fileName: string): Promise<string> {
-  if (uni.getSystemInfoSync().platform === "h5") {
+  if (
+    uni.getSystemInfoSync().platform === "h5" ||
+    uni.getSystemInfoSync().platform === "windows" ||
+    uni.getSystemInfoSync().platform === "ios" ||
+    uni.getSystemInfoSync().platform === "android"
+  ) {
     // H5环境下，使用Blob和URL.createObjectURL
     const blob = new Blob([data], { type: "image/png" });
     return URL.createObjectURL(blob);

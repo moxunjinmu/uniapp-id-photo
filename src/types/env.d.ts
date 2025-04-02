@@ -12,6 +12,10 @@ interface ImportMetaEnv {
    * API 服务器的 URL
    */
   VITE_APP_API_URL: string;
+  /**
+   * 应用环境
+   */
+  VITE_APP_ENV: string;
 }
 
 interface ImportMeta {

@@ -13,27 +13,25 @@
  * @returns Promise<ArrayBuffer> 文件内容
  */
 export async function readFile(filePath: string): Promise<ArrayBuffer> {
-  // 检查当前环境
-  console.log("当前环境", uni.getSystemInfoSync().platform);
-  if (
-    uni.getSystemInfoSync().platform === "h5" ||
-    uni.getSystemInfoSync().platform === "windows" ||
-    uni.getSystemInfoSync().platform === "ios" ||
-    uni.getSystemInfoSync().platform === "android"
-  ) {
-    // H5环境下使用fetch
-    const response = await fetch(filePath);
-    return await response.arrayBuffer();
-  } else {
-    // 小程序和App环境下使用uni.getFileSystemManager
+  try {
+    // 使用uni.request替代fetch
     return new Promise((resolve, reject) => {
-      const fs = uni.getFileSystemManager();
-      fs.readFile({
-        filePath,
-        success: (res) => resolve(res.data as ArrayBuffer),
-        fail: (err) => reject(err),
+      uni.request({
+        url: filePath,
+        method: "GET",
+        responseType: "arraybuffer",
+        success: (res) => {
+          resolve(res.data as ArrayBuffer);
+        },
+        fail: (err) => {
+          console.error("请求文件失败:", err);
+          reject(err);
+        },
       });
     });
+  } catch (error) {
+    console.error("读取文件失败: ", error);
+    throw error;
   }
 }
 
@@ -44,43 +42,44 @@ export async function readFile(filePath: string): Promise<ArrayBuffer> {
  * @returns Promise<string> 保存后的文件路径
  */
 export async function saveFile(data: ArrayBuffer, fileName: string): Promise<string> {
-  if (
-    uni.getSystemInfoSync().platform === "h5" ||
-    uni.getSystemInfoSync().platform === "windows" ||
-    uni.getSystemInfoSync().platform === "ios" ||
-    uni.getSystemInfoSync().platform === "android"
-  ) {
-    // H5环境下，使用Blob和URL.createObjectURL
-    const blob = new Blob([data], { type: "image/png" });
-    return URL.createObjectURL(blob);
-  } else {
-    // 小程序和App环境下，使用文件系统
-    return new Promise((resolve, reject) => {
-      const fs = uni.getFileSystemManager();
-      let tempDir = uni.getStorageSync("tempFilePath") || "";
+  try {
+    // 获取平台信息
+    const platform = uni.getSystemInfoSync()?.platform || "h5";
 
-      if (!tempDir) {
-        try {
-          tempDir = "/temp";
-          fs.mkdirSync(tempDir, true);
-        } catch (pathError) {
-          console.error("创建临时目录失败，使用默认路径", pathError);
-          tempDir = "/temp";
+    if (platform === "h5" || platform === "windows" || platform === "ios" || platform === "android") {
+      // H5环境下，使用Blob和URL.createObjectURL
+      const blob = new Blob([data], { type: "image/png" });
+      return URL.createObjectURL(blob);
+    } else {
+      // 小程序环境下，使用文件系统
+      return new Promise((resolve, reject) => {
+        const fs = uni.getFileSystemManager();
+        let tempDir = uni.getStorageSync("tempFilePath") || "";
+
+        if (!tempDir) {
+          try {
+            tempDir = "/temp";
+            fs.mkdirSync(tempDir, true);
+          } catch (pathError) {
+            console.error("创建临时目录失败，使用默认路径", pathError);
+            tempDir = "/temp";
+          }
+          uni.setStorageSync("tempFilePath", tempDir);
         }
-        uni.setStorageSync("tempFilePath", tempDir);
-      }
 
-      const filePath = `${tempDir}/${fileName}`;
-      console.log("保存文件路径", filePath);
-
-      fs.writeFile({
-        filePath,
-        data,
-        encoding: "binary",
-        success: () => resolve(filePath),
-        fail: (err) => reject(err),
+        const filePath = `${tempDir}/${fileName}`;
+        fs.writeFile({
+          filePath,
+          data,
+          encoding: "binary",
+          success: () => resolve(filePath),
+          fail: (err) => reject(err),
+        });
       });
-    });
+    }
+  } catch (error) {
+    console.error("保存文件失败:", error);
+    throw error;
   }
 }
 
@@ -89,9 +88,11 @@ export async function saveFile(data: ArrayBuffer, fileName: string): Promise<str
  * @returns string 临时目录路径
  */
 export function getTempDir(): string {
-  if (uni.getSystemInfoSync().platform === "h5") {
+  try {
+    const platform = uni.getSystemInfoSync()?.platform || "h5";
+    return platform === "h5" ? "/temp" : uni.getStorageSync("tempFilePath") || "/temp";
+  } catch (error) {
+    console.error("获取临时目录失败:", error);
     return "/temp";
-  } else {
-    return uni.getStorageSync("tempFilePath") || "/temp";
   }
 }

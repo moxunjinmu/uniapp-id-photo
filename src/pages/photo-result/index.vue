@@ -107,6 +107,7 @@
 import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
+import { usePhotoStore } from "@/store/modules/photo";
 import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
 import { useHistoryStore } from "@/store/modules/history";
 import { useToast } from "@/hooks/useToast";
@@ -114,18 +115,19 @@ import { PhotoType, PreviewMode } from "@/enums/PhotoType";
 import { checkDailyDownloadLimit, incrementDownloadCount } from "@/api/image";
 
 const configStore = useConfigStore();
+const photoStore = usePhotoStore();
 const historyStore = useHistoryStore();
 const { processPhoto, changeBackgroundColor: changePhotoBackground, generatePhotoLayout } = usePhotoProcessor();
 const { showToast, showLoading, hideLoading } = useToast();
 
 // 页面状态
-const photoTypeId = ref<string>("");
-const rawImgPath = ref<string>("");
-const imgPath = ref<string>("");
+const photoTypeId = ref<string>(photoStore.photoData.photoTypeId);
+const rawImgPath = ref<string>(photoStore.photoData.imgPath || "");
+const imgPath = ref<string>(photoStore.photoData.imgPath || "");
 const photoType = ref<PhotoType | null>(null);
 const previewMode = ref<PreviewMode>(PreviewMode.Single);
 const backgroundColors = ref<Array<{ name: string; value: string }>>(configStore.backgroundColors);
-const selectedBackgroundColor = ref<string>("#2196F3"); // 默认蓝色背景
+const selectedBackgroundColor = ref<string>(photoStore.photoData.backgroundColorValue); // 使用 store 中的背景色
 const layoutImagePath = ref<string>(""); // 排版图片路径
 
 // 更换背景色
@@ -138,6 +140,11 @@ const changeBackgroundColor = async (color: string) => {
     const newImagePath = await changePhotoBackground(imgPath.value, color);
     imgPath.value = newImagePath;
     selectedBackgroundColor.value = color;
+    photoStore.setBackgroundColor(color); // 更新 store 中的背景色
+
+    if (newImagePath !== imgPath.value) {
+      photoStore.setProcessedImgPath(newImagePath); // 保存处理后的图片路径
+    }
 
     // 如果当前是排版预览模式，也需要更新排版图片
     if (previewMode.value === PreviewMode.Layout) {
@@ -237,70 +244,100 @@ const saveToHistory = () => {
 };
 
 // 处理照片
-const handleProcessPhoto = async () => {
-  if (!photoType.value || !rawImgPath.value) return;
+// const handleProcessPhoto = async () => {
+//   if (!photoType.value || !rawImgPath.value) return;
 
-  showLoading("正在处理照片...");
+//   showLoading("正在处理照片...");
+
+//   try {
+//     const result = await processPhoto(rawImgPath.value, {
+//       backgroundColor: selectedBackgroundColor.value,
+//       photoType: photoType.value,
+//     });
+//     console.log("照片处理结果：", result);
+//     imgPath.value = result.thumbnailUrl;
+//     console.log("照片处理结果：", result.photoUrl);
+//     // 根据预览模式决定是否需要创建排版
+//     if (previewMode.value === PreviewMode.Layout) {
+//       layoutImagePath.value = await generatePhotoLayout(result.photoUrl, 4);
+//     }
+//     console.log("排版图片路径：", layoutImagePath.value);
+//     hideLoading();
+//   } catch (error) {
+//     hideLoading();
+//     showToast("照片处理失败");
+//     console.error("照片处理失败", error);
+//   }
+// };
+
+// 逻辑函数：处理照片类型
+// const handlePhotoType = (photoTypeId: string) => {
+//   const photoType = configStore.getPhotoTypeById(photoTypeId);
+//   if (!photoType) {
+//     showToast("未找到对应照片类型");
+//     throw new Error("PhotoType not found");
+//   }
+//   return photoType;
+// };
+
+// 逻辑函数：设置背景色
+// const setDefaultBackground = (photoType: PhotoType) => {
+//   if (photoType.backgroundColor) {
+//     const color = backgroundColors.value.find((c) => c.name.includes(photoType.backgroundColor!));
+//     selectedBackgroundColor.value = color?.value || "#FFFFFF"; // 提供默认值
+//   }
+// };
+
+onLoad(() => {
+  try {
+    // 从 store 获取信息
+    if (photoStore.photoData.photoTypeId && photoStore.photoData.imgPath) {
+      photoTypeId.value = photoStore.photoData.photoTypeId;
+      rawImgPath.value = photoStore.photoData.imgPath;
+      imgPath.value = photoStore.photoData.processedImgPath || photoStore.photoData.imgPath;
+      selectedBackgroundColor.value = photoStore.photoData.backgroundColorValue;
+
+      // 获取照片类型
+      photoType.value = configStore.getPhotoTypeById(photoTypeId.value) || null;
+
+      // 处理照片
+      processImage();
+    } else {
+      showToast("照片信息丢失，请重新选择照片");
+      setTimeout(() => {
+        uni.navigateBack();
+      }, 1500);
+    }
+  } catch (error) {
+    console.error("加载照片结果页面失败:", error);
+    showToast("加载失败，请重试");
+  }
+});
+
+// 处理图片
+const processImage = async () => {
+  if (!rawImgPath.value || !photoType.value) return;
+
+  showLoading("处理照片中...");
 
   try {
+    // 使用原始照片和选定的背景色处理照片
     const result = await processPhoto(rawImgPath.value, {
       backgroundColor: selectedBackgroundColor.value,
-      photoType: photoType.value,
+      width: photoType.value.pixelWidth,
+      height: photoType.value.pixelHeight,
     });
-    console.log("照片处理结果：", result);
+
     imgPath.value = result.thumbnailUrl;
-    console.log("照片处理结果：", result.photoUrl);
-    // 根据预览模式决定是否需要创建排版
-    if (previewMode.value === PreviewMode.Layout) {
-      layoutImagePath.value = await generatePhotoLayout(result.photoUrl, 4);
-    }
-    console.log("排版图片路径：", layoutImagePath.value);
+    photoStore.setProcessedImgPath(result.thumbnailUrl);
+
     hideLoading();
   } catch (error) {
     hideLoading();
-    showToast("照片处理失败");
-    console.error("照片处理失败", error);
+    console.error("处理照片失败:", error);
+    showToast("处理照片失败，请重试");
   }
 };
-
-// 逻辑函数：处理照片类型
-const handlePhotoType = (photoTypeId: string) => {
-  const photoType = configStore.getPhotoTypeById(photoTypeId);
-  if (!photoType) {
-    showToast("未找到对应照片类型");
-    throw new Error("PhotoType not found");
-  }
-  return photoType;
-};
-
-// 逻辑函数：设置背景色
-const setDefaultBackground = (photoType: PhotoType) => {
-  if (photoType.backgroundColor) {
-    const color = backgroundColors.value.find((c) => c.name.includes(photoType.backgroundColor!));
-    selectedBackgroundColor.value = color?.value || "#FFFFFF"; // 提供默认值
-  }
-};
-
-onLoad((options: any) => {
-  // 获取路由参数
-  photoTypeId.value = options.id || "";
-  rawImgPath.value = decodeURIComponent(options.imgPath || "");
-
-  if (photoTypeId.value) {
-    photoType.value = handlePhotoType(photoTypeId.value);
-
-    // 设置默认背景色
-    setDefaultBackground(photoType.value);
-
-    // 处理照片
-    handleProcessPhoto();
-  } else {
-    showToast("参数错误");
-    setTimeout(() => {
-      uni.navigateBack();
-    }, 1500);
-  }
-});
 </script>
 
 <style lang="scss" scoped>

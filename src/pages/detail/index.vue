@@ -120,12 +120,14 @@
 import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
+import { usePhotoStore } from "@/store/modules/photo";
 import { useCameraController } from "@/hooks/useCameraController";
 // import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
 import { useToast } from "@/hooks/useToast";
 import { PhotoType } from "@/enums/PhotoType";
 
 const configStore = useConfigStore();
+const photoStore = usePhotoStore();
 const { chooseFromAlbum } = useCameraController();
 // const { changeBackgroundColor } = usePhotoProcessor();
 const { showToast, showLoading, hideLoading } = useToast();
@@ -134,7 +136,7 @@ const photoTypeId = ref("");
 const photoType = ref<PhotoType | null>(null);
 // 背景色相关
 const backgroundColors = ref<Array<{ name: string; value: string }>>(configStore.backgroundColors);
-const selectedBackgroundColor = ref<string>("#2196F3"); // 默认蓝色背景
+const selectedBackgroundColor = ref<string>(photoStore.photoData.backgroundColorValue); // 使用 store 中的背景色
 
 // 预览图片样式
 const previewImageStyle = ref({
@@ -161,7 +163,8 @@ const previewImageStyle = ref({
 const handleChooseFromAlbum = async () => {
   try {
     const imgPath = await chooseFromAlbum();
-    navigateToPhotoResult(imgPath);
+    photoStore.setImgPath(imgPath); // 存储选择的图片路径
+    navigateToPhotoResult();
   } catch (error) {
     console.error("选择图片失败", error);
   }
@@ -170,14 +173,14 @@ const handleChooseFromAlbum = async () => {
 // 导航到相机页面
 const navigateToCamera = () => {
   uni.navigateTo({
-    url: `/pages/camera/index?id=${photoTypeId.value}`,
+    url: "/pages/camera/index",
   });
 };
 
 // 导航到结果页面
-const navigateToPhotoResult = (imgPath: string) => {
+const navigateToPhotoResult = () => {
   uni.navigateTo({
-    url: `/pages/photo-result/index?id=${photoTypeId.value}&imgPath=${encodeURIComponent(imgPath)}`,
+    url: "/pages/photo-result/index",
   });
 };
 
@@ -196,6 +199,7 @@ const handleChangeBackgroundColor = async (color: string) => {
 
   showLoading("更换背景色中...");
   selectedBackgroundColor.value = color;
+  photoStore.setBackgroundColor(color); // 将背景色保存到 store
 
   try {
     // 直接更新预览图片的背景色
@@ -217,7 +221,9 @@ const handleChangeBackgroundColor = async (color: string) => {
 const setDefaultBackground = (photoType: PhotoType) => {
   if (photoType.backgroundColor) {
     const color = backgroundColors.value.find((c) => c.name.toLowerCase().includes(photoType.backgroundColor!));
-    selectedBackgroundColor.value = color?.value || "#FFFFFF"; // 提供默认值
+    const colorValue = color?.value || "#FFFFFF"; // 提供默认值
+    selectedBackgroundColor.value = colorValue;
+    photoStore.setBackgroundColor(colorValue); // 保存到 store
   }
 };
 
@@ -229,6 +235,7 @@ onLoad((options: any) => {
     photoTypeId.value = options.id;
 
     if (photoTypeId.value) {
+      photoStore.setPhotoTypeId(photoTypeId.value); // 保存照片类型ID到 store
       photoType.value = handlePhotoType(photoTypeId.value);
       // 设置默认背景色
       if (photoType.value) {

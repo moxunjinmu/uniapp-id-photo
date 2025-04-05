@@ -57,7 +57,8 @@
 <script lang="ts" setup>
 import { useUserStore } from "@/store/modules/user";
 import IconFont from "@/components/IconFont.vue";
-import { onMounted, onUnmounted, ref } from "vue";
+import { onUnmounted, ref } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
 
 // 登录表单
 const phone = ref("");
@@ -158,7 +159,7 @@ onUnmounted(() => {
 });
 
 // 加载背景图
-onMounted(() => {
+onLoad(() => {
   const bgContainer = document.getElementById("dynamic-bg");
   if (bgContainer) {
     const width = Math.floor(bgContainer.clientWidth * 2);

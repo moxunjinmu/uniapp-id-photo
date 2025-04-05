@@ -61,8 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
-import { onShow } from "@dcloudio/uni-app";
+import { computed } from "vue";
+import { onShow, onLoad } from "@dcloudio/uni-app";
 import { useHistoryStore } from "@/store/modules/history";
 import { useToast } from "@/hooks/useToast";
 
@@ -141,7 +141,7 @@ const handleViewPhoto = (record: any) => {
 };
 
 // 页面加载时初始化历史记录
-onMounted(() => {
+onLoad(() => {
   historyStore.initHistory();
 });
 

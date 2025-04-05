@@ -44,22 +44,20 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
 import { useCameraController } from "@/hooks/useCameraController";
 import { useToast } from "@/hooks/useToast";
 import { usePhotoStore } from "@/store/modules/photo";
 
 // 获取相机控制器
-const { devicePosition, initCamera, toggleCameraPosition, takePicture } = useCameraController();
+const { devicePosition, initCamera, toggleCameraPosition, takePicture, isCameraReady } = useCameraController();
 const { showToast, showLoading, hideLoading } = useToast();
 const photoStore = usePhotoStore();
 
 // 初始化相机
-onMounted(() => {
-  // 初始化相机
-  setTimeout(() => {
-    initCamera("camera", { devicePosition: "front" });
-  }, 300);
+// 获取路由参数
+onLoad(() => {
+  initCamera();
 });
 
 // 切换摄像头
@@ -75,6 +73,11 @@ const handleCameraError = (error: any) => {
 
 // 拍照
 const handleTakePicture = async () => {
+  if (!isCameraReady.value) {
+    showToast("相机未就绪，请稍后再试");
+    return;
+  }
+
   showLoading("处理中...");
 
   try {
@@ -91,6 +94,7 @@ const handleTakePicture = async () => {
 
 // 导航到结果页面
 const navigateToPhotoResult = () => {
+  console.log("imgPath");
   uni.navigateTo({
     url: "/pages/photo-result/index",
   });

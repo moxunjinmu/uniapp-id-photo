@@ -126,7 +126,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
 import { useHistoryStore } from "@/store/modules/history";
 
@@ -136,7 +136,7 @@ const historyStore = useHistoryStore();
 const photoTypes = computed(() => configStore.getPopularPhotoTypes);
 
 // 初始化历史记录
-onMounted(() => {
+onLoad(() => {
   historyStore.initHistory();
 });
 

@@ -24,6 +24,8 @@ export function usePhotoProcessor() {
   const { showToast } = useToast();
   // 生产环境使用真实API，开发环境使用模拟API
   let processedImageUrl;
+  // 获取平台信息
+  const platform = uni.getSystemInfoSync()?.platform || "h5";
 
   /**
    * 处理证件照
@@ -83,12 +85,10 @@ export function usePhotoProcessor() {
       const fileData = await readFile(imageUrl);
       const base64 = uni.arrayBufferToBase64(fileData as ArrayBuffer);
       apiOptions.image_file_b64 = base64;
-      if (import.meta.env.VITE_APP_ENV === "production") {
+      if (import.meta.env.VITE_APP_ENV === "production" || platform === "android" || platform === "devtools") {
         // 使用真实API
         const res = await removeBackground(apiOptions);
-        console.log("processedImageUrl", res);
         processedImageUrl = await saveFile(res, `bg_removed_${Date.now()}.png`);
-        console.log("真实环境使用API", { imageUrl, apiOptions });
       } else {
         // 模拟API调用
         console.log("开发环境使用模拟API");
@@ -119,7 +119,7 @@ export function usePhotoProcessor() {
    */
   const generatePhotoLayout = async (photoUrl: string, count: 4 | 8 | 12 = 4): Promise<string> => {
     try {
-      if (import.meta.env.VITE_APP_ENV === "production") {
+      if (import.meta.env.VITE_APP_ENV === "production" || platform === "mp-weixin") {
         return await createPhotoLayout(photoUrl, count);
       } else {
         // 模拟排版生成

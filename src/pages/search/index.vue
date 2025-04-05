@@ -87,7 +87,7 @@ const navigateToDetail = (id: string) => {
 };
 
 // 初始加载默认显示所有类型
-onMounted(() => {
+onLoad(() => {
   searchResults.value = configStore.photoTypes;
 });
 </script>

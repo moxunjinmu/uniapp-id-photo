@@ -88,7 +88,7 @@
       <view class="bg-yellow-50 p-3 rounded-xl">
         <view class="flex items-start">
           <IconFont name="info-circle" class="text-yellow-500 mt-1 mr-2" />
-          <text class="text-24rpx text-gray-700 leading-1.4">
+          <text class="text-24rpx text-gray-700 leading-relaxed">
             照片已自动处理完成，您可以选择背景颜色，下载或冲印照片。下载后的照片可用于各类电子证件提交。
           </text>
         </view>
@@ -334,10 +334,50 @@ const processImage = async () => {
     hideLoading();
   } catch (error) {
     hideLoading();
-    console.error("处理照片失败:", error);
-    showToast("处理照片失败，请重试");
+    showToast("照片处理失败");
+    console.error("照片处理失败", error);
   }
 };
+
+// 逻辑函数：处理照片类型
+const handlePhotoType = (photoTypeId: string) => {
+  const photoType = configStore.getPhotoTypeById(photoTypeId);
+  if (!photoType) {
+    showToast("未找到对应照片类型");
+    throw new Error("PhotoType not found");
+  }
+  return photoType;
+};
+
+// 逻辑函数：设置背景色
+const setDefaultBackground = (photoType: PhotoType) => {
+  if (photoType.backgroundColor) {
+    const color = backgroundColors.value.find((c) => c.name.includes(photoType.backgroundColor!));
+    selectedBackgroundColor.value = color?.value || "#FFFFFF"; // 提供默认值
+  }
+};
+
+onLoad((options: any) => {
+  // 获取路由参数
+  photoTypeId.value = options.id || "";
+  rawImgPath.value = decodeURIComponent(options.imgPath || "");
+  console.log("options", options);
+
+  if (photoTypeId.value) {
+    photoType.value = handlePhotoType(photoTypeId.value);
+
+    // 设置默认背景色
+    setDefaultBackground(photoType.value);
+
+    // 处理照片
+    processImage();
+  } else {
+    showToast("参数错误");
+    // setTimeout(() => {
+    //   uni.navigateBack();
+    // }, 1500);
+  }
+});
 </script>
 
 <style lang="scss" scoped>

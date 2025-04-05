@@ -1,6 +1,22 @@
 import { PhotoType } from "@/enums/PhotoType";
 import { useToast } from "./useToast";
 
+// 图片缓存
+const imageCache = new Map<string, HTMLImageElement | ImageBitmap>();
+
+// 清除缓存的函数
+const clearImageCache = () => {
+  console.log("清除图片缓存");
+  imageCache.clear();
+};
+
+// 在页面关闭时清除缓存
+// 使用uni-app的方式监听页面关闭事件
+uni.onAppHide(() => {
+  console.log("应用进入后台，清除图片缓存");
+  clearImageCache();
+});
+
 export interface ChangeBackgroundOptions {
   backgroundColor: string;
   photoType?: PhotoType;
@@ -25,9 +41,14 @@ export function useImageBackground() {
     try {
       // 获取平台信息
       const platform = uni.getSystemInfoSync()?.platform || "h5";
-      const isMiniProgram = platform === "mp-weixin" || platform === "devtools";
+      const isDevTool = platform === "devtools"; // 微信开发工具环境判断
+      const isAndroid = platform === "android";
+      const isWeiXin = platform === "mp-weixin";
+      const isMiniProgram = isWeiXin || isDevTool || isAndroid;
 
-      // 加载图片
+      console.log("更换背景色环境:", platform);
+
+      // 加载图片（使用缓存）
       const imageData = await loadImage(imageUrl);
       console.log("图片加载成功", imageData);
 
@@ -61,6 +82,88 @@ export function useImageBackground() {
     }
   };
 
+  const weiXinLoadImage = async (
+    imageUrl: string,
+    resolve: (value: HTMLImageElement | ImageBitmap) => void,
+    reject: (reason?: any) => void,
+  ) => {
+    try {
+      console.log("小程序加载图片:", imageUrl);
+
+      // 检查缓存中是否已有该图片
+      if (imageCache.has(imageUrl)) {
+        console.log("使用缓存的图片:", imageUrl);
+        resolve(imageCache.get(imageUrl)!);
+        return;
+      }
+
+      // 非wxfile://路径，直接加载
+      const offscreenCanvas = uni.createOffscreenCanvas({ type: "2d", width: 1, height: 1 });
+      const img = (offscreenCanvas as any).createImage();
+
+      // 添加超时处理
+      const timeout = setTimeout(() => {
+        reject(new Error("加载图片超时"));
+      }, 30000); // 增加超时时间到30秒
+
+      img.onload = () => {
+        clearTimeout(timeout);
+        console.log("小程序图片加载成功", img.width, img.height);
+        // 将图片存入缓存
+        imageCache.set(imageUrl, img);
+        resolve(img);
+      };
+
+      img.onerror = (err: any) => {
+        clearTimeout(timeout);
+        console.error("小程序图片加载失败", err);
+        reject(new Error("加载图片失败"));
+      };
+
+      img.src = imageUrl;
+    } catch (error) {
+      console.error("小程序加载图片出错:", error);
+      reject(error);
+    }
+  };
+
+  const h5LoadImage = async (
+    imageUrl: string,
+    resolve: (value: HTMLImageElement | ImageBitmap) => void,
+    reject: (reason?: any) => void,
+  ) => {
+    // 检查缓存中是否已有该图片
+    if (imageCache.has(imageUrl)) {
+      console.log("使用缓存的图片:", imageUrl);
+      resolve(imageCache.get(imageUrl)!);
+      return;
+    }
+
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // 允许跨域
+
+    // 添加超时处理
+    const timeout = setTimeout(() => {
+      reject(new Error("加载图片超时"));
+    }, 10000);
+
+    img.onload = () => {
+      clearTimeout(timeout);
+      console.log("H5图片加载成功", img.width, img.height);
+      // 将图片存入缓存
+      imageCache.set(imageUrl, img);
+      resolve(img);
+    };
+
+    img.onerror = (err: any) => {
+      clearTimeout(timeout);
+      console.error("H5图片加载失败", err);
+      reject(new Error("加载图片失败"));
+    };
+
+    img.src = imageUrl;
+  };
+
   /**
    * 加载图片
    * @param imageUrl 图片路径
@@ -70,57 +173,22 @@ export function useImageBackground() {
     return new Promise((resolve, reject) => {
       // 获取平台信息
       const platform = uni.getSystemInfoSync()?.platform || "h5";
-      const isMiniProgram = platform === "mp-weixin" || platform === "devtools";
+      const isDevTool = platform === "devtools"; // 微信开发工具环境判断
+      const isAndroid = platform === "android";
+      const isWeiXin = platform === "mp-weixin";
+      const isMiniProgram = isWeiXin || isDevTool || isAndroid;
+
+      console.log("加载图片环境:", platform, "图片路径:", imageUrl);
 
       if (isMiniProgram) {
         // 小程序环境
         // #ifdef MP-WEIXIN
-        const offscreenCanvas = uni.createOffscreenCanvas({ type: "2d", width: 1, height: 1 });
-        const img = (offscreenCanvas as any).createImage();
-
-        // 添加超时处理
-        const timeout = setTimeout(() => {
-          reject(new Error("加载图片超时"));
-        }, 10000);
-
-        img.onload = () => {
-          clearTimeout(timeout);
-          console.log("小程序图片加载成功", img.width, img.height);
-          resolve(img);
-        };
-
-        img.onerror = (err: any) => {
-          clearTimeout(timeout);
-          console.error("小程序图片加载失败", err);
-          reject(new Error("加载图片失败"));
-        };
-
-        img.src = imageUrl;
+        weiXinLoadImage(imageUrl, resolve, reject);
+        return;
         // #endif
-      } else {
-        // H5环境
-        const img = new Image();
-        img.crossOrigin = "anonymous"; // 允许跨域
-
-        // 添加超时处理
-        const timeout = setTimeout(() => {
-          reject(new Error("加载图片超时"));
-        }, 10000);
-
-        img.onload = () => {
-          clearTimeout(timeout);
-          console.log("H5图片加载成功", img.width, img.height);
-          resolve(img);
-        };
-
-        img.onerror = (err: any) => {
-          clearTimeout(timeout);
-          console.error("H5图片加载失败", err);
-          reject(new Error("加载图片失败"));
-        };
-
-        img.src = imageUrl;
       }
+      // H5环境
+      h5LoadImage(imageUrl, resolve, reject);
     });
   };
 
@@ -142,13 +210,12 @@ export function useImageBackground() {
       const canvas = uni.createOffscreenCanvas({ type: "2d", width, height }) as any;
       return canvas;
       // #endif
-    } else {
-      // H5环境
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      return canvas;
     }
+    // H5环境
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    return canvas;
   };
 
   /**
@@ -174,21 +241,21 @@ export function useImageBackground() {
         }
       });
       // #endif
-    } else {
-      // H5环境
-      return new Promise((resolve, reject) => {
-        try {
-          const dataURL = (canvas as HTMLCanvasElement).toDataURL("image/png");
-          resolve(dataURL);
-        } catch (error) {
-          console.error("H5导出图片失败", error);
-          reject(error);
-        }
-      });
     }
+    // H5环境
+    return new Promise((resolve, reject) => {
+      try {
+        const dataURL = (canvas as HTMLCanvasElement).toDataURL("image/png");
+        resolve(dataURL);
+      } catch (error) {
+        console.error("H5导出图片失败", error);
+        reject(error);
+      }
+    });
   };
 
   return {
     changeBackground,
+    clearImageCache, // 导出清除缓存的方法
   };
 }

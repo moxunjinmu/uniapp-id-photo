@@ -249,66 +249,15 @@ const saveToHistory = () => {
 };
 
 // 处理照片
-// const handleProcessPhoto = async () => {
-//   if (!photoType.value || !rawImgPath.value) return;
+const handleProcessPhoto = async () => {
+  if (!photoType.value || !rawImgPath.value) return;
 
-//   showLoading("正在处理照片...");
-
-//   try {
-//     const result = await processPhoto(rawImgPath.value, {
-//       backgroundColor: selectedBackgroundColor.value,
-//       photoType: photoType.value,
-//     });
-//     console.log("照片处理结果：", result);
-//     imgPath.value = result.thumbnailUrl;
-//     console.log("照片处理结果：", result.photoUrl);
-//     // 根据预览模式决定是否需要创建排版
-//     if (previewMode.value === PreviewMode.Layout) {
-//       layoutImagePath.value = await generatePhotoLayout(result.photoUrl, 4);
-//     }
-//     console.log("排版图片路径：", layoutImagePath.value);
-//     hideLoading();
-//   } catch (error) {
-//     hideLoading();
-//     showToast("照片处理失败");
-//     console.error("照片处理失败", error);
-//   }
-// };
-
-// 逻辑函数：处理照片类型
-// const handlePhotoType = (photoTypeId: string) => {
-//   const photoType = configStore.getPhotoTypeById(photoTypeId);
-//   if (!photoType) {
-//     showToast("未找到对应照片类型");
-//     throw new Error("PhotoType not found");
-//   }
-//   return photoType;
-// };
-
-// 逻辑函数：设置背景色
-// const setDefaultBackground = (photoType: PhotoType) => {
-//   if (photoType.backgroundColor) {
-//     const color = backgroundColors.value.find((c) => c.name.includes(photoType.backgroundColor!));
-//     selectedBackgroundColor.value = color?.value || "#FFFFFF"; // 提供默认值
-//   }
-// };
-
-onLoad(() => {
-  processImage();
-});
-
-// 处理图片
-const processImage = async () => {
-  if (!rawImgPath.value || !photoType.value) return;
-
-  showLoading("处理照片中...");
+  showLoading("正在处理照片...");
 
   try {
-    // 使用原始照片和选定的背景色处理照片
     const result = await processPhoto(rawImgPath.value, {
       backgroundColor: selectedBackgroundColor.value,
-      width: photoType.value.pixelWidth,
-      height: photoType.value.pixelHeight,
+      photoType: photoType.value,
     });
 
     console.log("照片处理结果：", result);
@@ -346,7 +295,7 @@ onLoad(() => {
           imgPath.value = photoStore.photoState.processedImagePath;
         } else {
           // 处理照片
-          // handleProcessPhoto();
+          handleProcessPhoto();
         }
 
         // 如果已经有排版图片，直接使用

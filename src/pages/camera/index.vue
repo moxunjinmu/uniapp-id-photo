@@ -44,22 +44,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { useCameraController } from "@/hooks/useCameraController";
+import { usePhotoStore } from "@/store/modules/photo";
 import { useToast } from "@/hooks/useToast";
 
 // 获取相机控制器
 const { devicePosition, initCamera, toggleCameraPosition, takePicture, isCameraReady } = useCameraController();
 const { showToast, showLoading, hideLoading } = useToast();
-
-// 获取照片类型ID
-const photoTypeId = ref("");
+const photoStore = usePhotoStore();
 
 // 初始化相机
-// 获取路由参数
-onLoad((options: any) => {
-  photoTypeId.value = options.id || "";
+onLoad(() => {
   initCamera();
 });
 
@@ -85,8 +81,10 @@ const handleTakePicture = async () => {
 
   try {
     const imgPath = await takePicture();
+    // 将图片路径保存到全局状态
+    photoStore.setSourceImage(imgPath);
     hideLoading();
-    navigateToPhotoResult(imgPath);
+    navigateToPhotoResult();
   } catch (error) {
     hideLoading();
     console.error("拍照失败：", error);
@@ -95,14 +93,10 @@ const handleTakePicture = async () => {
 };
 
 // 导航到结果页面
-const navigateToPhotoResult = (imgPath: string) => {
-  console.log("imgPath");
-  const encodePath = encodeURIComponent(imgPath);
-  if (!encodePath) {
-    console.log("失败", encodePath);
-  }
+const navigateToPhotoResult = () => {
+  console.log("导航到照片结果页");
   uni.navigateTo({
-    url: `/pages/photo-result/index?id=${photoTypeId.value}&imgPath=${encodePath}`,
+    url: "/pages/photo-result/index",
   });
 };
 

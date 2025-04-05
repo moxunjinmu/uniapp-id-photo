@@ -40,7 +40,7 @@ export function usePhotoProcessor() {
       const apiOptions: RemoveBackgroundOptions = {
         image_file_b64: "",
         bg_color: backgroundColor,
-        size: "auto",
+        size: "preview",
         type: "person", // 证件照主要是人像
         format: "png", // 透明背景最好用PNG
         crop: true, // 裁剪空白区域
@@ -53,7 +53,7 @@ export function usePhotoProcessor() {
         if (photoType.pixelWidth && photoType.pixelHeight) {
           // 如果证件照尺寸较小（小于1000像素），使用较小的输出尺寸以提高处理速度
           if (photoType.pixelWidth < 1000 || photoType.pixelHeight < 1000) {
-            apiOptions.size = "small";
+            apiOptions.size = "preview";
           } else if (photoType.pixelWidth > 2000 || photoType.pixelHeight > 2000) {
             // 如果证件照尺寸较大，使用高清输出
             apiOptions.size = "hd";

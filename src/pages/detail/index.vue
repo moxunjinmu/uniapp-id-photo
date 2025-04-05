@@ -136,13 +136,13 @@ const photoTypeId = ref("");
 const photoType = ref<PhotoType | null>(null);
 // 背景色相关
 const backgroundColors = ref<Array<{ name: string; value: string }>>(configStore.backgroundColors);
-const selectedBackgroundColor = ref<string>(photoStore.photoData.backgroundColorValue); // 使用 store 中的背景色
+const selectedBackgroundColor = ref<string>(photoStore.photoState.backgroundColor); // 默认背景色从store获取
 
 // 预览图片样式
 const previewImageStyle = ref({
   width: "100%",
   height: "100%",
-  backgroundColor: "#FFFFFF",
+  backgroundColor: selectedBackgroundColor.value,
 });
 
 // 获取用途文本
@@ -163,7 +163,8 @@ const previewImageStyle = ref({
 const handleChooseFromAlbum = async () => {
   try {
     const imgPath = await chooseFromAlbum();
-    photoStore.setImgPath(imgPath); // 存储选择的图片路径
+    // 将图片路径保存到store
+    photoStore.setSourceImage(imgPath);
     navigateToPhotoResult();
   } catch (error) {
     console.error("选择图片失败", error);
@@ -199,7 +200,7 @@ const handleChangeBackgroundColor = async (color: string) => {
 
   showLoading("更换背景色中...");
   selectedBackgroundColor.value = color;
-  photoStore.setBackgroundColor(color); // 将背景色保存到 store
+  photoStore.setBackgroundColor(color); // 保存背景色到store
 
   try {
     // 直接更新预览图片的背景色
@@ -223,7 +224,7 @@ const setDefaultBackground = (photoType: PhotoType) => {
     const color = backgroundColors.value.find((c) => c.name.toLowerCase().includes(photoType.backgroundColor!));
     const colorValue = color?.value || "#FFFFFF"; // 提供默认值
     selectedBackgroundColor.value = colorValue;
-    photoStore.setBackgroundColor(colorValue); // 保存到 store
+    photoStore.setBackgroundColor(colorValue); // 保存到store
   }
 };
 
@@ -235,7 +236,7 @@ onLoad((options: any) => {
     photoTypeId.value = options.id;
 
     if (photoTypeId.value) {
-      photoStore.setPhotoTypeId(photoTypeId.value); // 保存照片类型ID到 store
+      photoStore.setPhotoType(photoTypeId.value); // 保存照片类型ID到store
       photoType.value = handlePhotoType(photoTypeId.value);
       // 设置默认背景色
       if (photoType.value) {

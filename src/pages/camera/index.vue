@@ -46,8 +46,8 @@
 <script setup lang="ts">
 import { onLoad } from "@dcloudio/uni-app";
 import { useCameraController } from "@/hooks/useCameraController";
-import { useToast } from "@/hooks/useToast";
 import { usePhotoStore } from "@/store/modules/photo";
+import { useToast } from "@/hooks/useToast";
 
 // 获取相机控制器
 const { devicePosition, initCamera, toggleCameraPosition, takePicture, isCameraReady } = useCameraController();
@@ -55,7 +55,6 @@ const { showToast, showLoading, hideLoading } = useToast();
 const photoStore = usePhotoStore();
 
 // 初始化相机
-// 获取路由参数
 onLoad(() => {
   initCamera();
 });
@@ -82,7 +81,8 @@ const handleTakePicture = async () => {
 
   try {
     const imgPath = await takePicture();
-    photoStore.setImgPath(imgPath); // 将照片路径保存到 store
+    // 将图片路径保存到全局状态
+    photoStore.setSourceImage(imgPath);
     hideLoading();
     navigateToPhotoResult();
   } catch (error) {
@@ -94,7 +94,7 @@ const handleTakePicture = async () => {
 
 // 导航到结果页面
 const navigateToPhotoResult = () => {
-  console.log("imgPath");
+  console.log("导航到照片结果页");
   uni.navigateTo({
     url: "/pages/photo-result/index",
   });

@@ -29,6 +29,7 @@ export function useImageBackground() {
 
       // 加载图片
       const imageData = await loadImage(imageUrl);
+      console.log("图片加载成功", imageData);
 
       // 创建Canvas
       const canvas = await createCanvas(imageData.width, imageData.height, isMiniProgram);
@@ -37,6 +38,9 @@ export function useImageBackground() {
       if (!ctx) {
         throw new Error("无法创建Canvas上下文");
       }
+
+      // 清空Canvas
+      ctx.clearRect(0, 0, imageData.width, imageData.height);
 
       // 绘制背景色
       ctx.fillStyle = backgroundColor;
@@ -47,6 +51,7 @@ export function useImageBackground() {
 
       // 导出Canvas为图片
       const newImagePath = await exportCanvasToImage(canvas, isMiniProgram);
+      console.log("背景色更换成功，新图片路径:", newImagePath);
 
       return newImagePath;
     } catch (error: any) {
@@ -72,16 +77,48 @@ export function useImageBackground() {
         // #ifdef MP-WEIXIN
         const offscreenCanvas = uni.createOffscreenCanvas({ type: "2d", width: 1, height: 1 });
         const img = (offscreenCanvas as any).createImage();
-        img.onload = () => resolve(img);
-        img.onerror = () => reject(new Error("加载图片失败"));
+
+        // 添加超时处理
+        const timeout = setTimeout(() => {
+          reject(new Error("加载图片超时"));
+        }, 10000);
+
+        img.onload = () => {
+          clearTimeout(timeout);
+          console.log("小程序图片加载成功", img.width, img.height);
+          resolve(img);
+        };
+
+        img.onerror = (err: any) => {
+          clearTimeout(timeout);
+          console.error("小程序图片加载失败", err);
+          reject(new Error("加载图片失败"));
+        };
+
         img.src = imageUrl;
         // #endif
       } else {
         // H5环境
         const img = new Image();
         img.crossOrigin = "anonymous"; // 允许跨域
-        img.onload = () => resolve(img);
-        img.onerror = () => reject(new Error("加载图片失败"));
+
+        // 添加超时处理
+        const timeout = setTimeout(() => {
+          reject(new Error("加载图片超时"));
+        }, 10000);
+
+        img.onload = () => {
+          clearTimeout(timeout);
+          console.log("H5图片加载成功", img.width, img.height);
+          resolve(img);
+        };
+
+        img.onerror = (err: any) => {
+          clearTimeout(timeout);
+          console.error("H5图片加载失败", err);
+          reject(new Error("加载图片失败"));
+        };
+
         img.src = imageUrl;
       }
     });
@@ -132,6 +169,7 @@ export function useImageBackground() {
           const tempFilePath = (canvas as any).toDataURL("image/png");
           resolve(tempFilePath);
         } catch (error) {
+          console.error("小程序导出图片失败", error);
           reject(error);
         }
       });
@@ -143,6 +181,7 @@ export function useImageBackground() {
           const dataURL = (canvas as HTMLCanvasElement).toDataURL("image/png");
           resolve(dataURL);
         } catch (error) {
+          console.error("H5导出图片失败", error);
           reject(error);
         }
       });

@@ -123,7 +123,9 @@ const { showToast, showLoading, hideLoading } = useToast();
 // 页面状态
 const photoType = ref<PhotoType | null>(null);
 const rawImgPath = computed(() => photoStore.photoState.sourceImagePath);
-const imgPath = ref<string>(photoStore.photoState.processedImagePath || "");
+const transparentImgPath = computed(() => photoStore.photoState.processedImagePath || "");
+const coloredImgPath = computed(() => photoStore.photoState.coloredImagePath || "");
+const imgPath = ref<string>(coloredImgPath.value || transparentImgPath.value || "");
 const previewMode = ref<PreviewMode>(
   photoStore.photoState.previewMode === "layout" ? PreviewMode.Layout : PreviewMode.Single,
 );
@@ -133,22 +135,28 @@ const layoutImagePath = ref<string>(photoStore.photoState.layoutImagePath || "")
 
 // 更换背景色
 const changeBackgroundColor = async (color: string) => {
-  if (selectedBackgroundColor.value === color || !imgPath.value) return;
+  if (selectedBackgroundColor.value === color || !transparentImgPath.value) return;
 
   showLoading("更换背景色中...");
+  console.log("开始更换背景色", { color, transparentImagePath: transparentImgPath.value });
 
   try {
-    // 使用前端方法更换背景色
-    const newImagePath = await changePhotoBackground(imgPath.value, color);
+    // 使用前端方法更换背景色，基于透明背景图片
+    console.log("调用changePhotoBackground函数");
+    const newImagePath = await changePhotoBackground(transparentImgPath.value, color);
+    console.log("背景色更换成功，新图片路径:", newImagePath);
+
+    // 更新本地状态
     imgPath.value = newImagePath;
     selectedBackgroundColor.value = color;
 
-    // 更新store中的背景色和处理后的图片
+    // 更新store中的背景色和带背景色的图片
     photoStore.setBackgroundColor(color);
-    photoStore.setProcessedImage(newImagePath);
+    photoStore.setColoredImage(newImagePath);
 
     // 如果当前是排版预览模式，也需要更新排版图片
     if (previewMode.value === PreviewMode.Layout) {
+      console.log("更新排版图片");
       const newLayoutPath = await generatePhotoLayout(newImagePath, 4);
       layoutImagePath.value = newLayoutPath;
       photoStore.setLayoutImage(newLayoutPath);
@@ -263,17 +271,21 @@ const handleProcessPhoto = async () => {
     });
 
     console.log("照片处理结果：", result);
-    imgPath.value = result.thumbnailUrl;
-    // 更新store中的处理后图片
+
+    // 保存透明背景图片
     photoStore.setProcessedImage(result.thumbnailUrl);
 
     // 如果用户选择的背景色不是透明色，则在前端处理背景色
     if (selectedBackgroundColor.value !== photoStore.photoState.transparentBackgroundColor) {
       console.log("在前端处理背景色", selectedBackgroundColor.value);
-      const newImagePath = await changePhotoBackground(imgPath.value, selectedBackgroundColor.value);
+      const newImagePath = await changePhotoBackground(result.thumbnailUrl, selectedBackgroundColor.value);
+
+      // 保存带背景色的图片
+      photoStore.setColoredImage(newImagePath);
       imgPath.value = newImagePath;
-      // 更新store中的处理后图片
-      photoStore.setProcessedImage(newImagePath);
+    } else {
+      // 如果用户选择的是透明背景色，则直接使用透明背景图片
+      imgPath.value = result.thumbnailUrl;
     }
 
     // 根据预览模式决定是否需要创建排版
@@ -303,7 +315,12 @@ onLoad(() => {
       if (photoType.value) {
         // 如果已经有处理好的图片，直接使用
         if (photoStore.photoState.processedImagePath) {
-          imgPath.value = photoStore.photoState.processedImagePath;
+          // 如果有带背景色的图片，优先使用
+          if (photoStore.photoState.coloredImagePath) {
+            imgPath.value = photoStore.photoState.coloredImagePath;
+          } else {
+            imgPath.value = photoStore.photoState.processedImagePath;
+          }
         } else {
           // 处理照片
           handleProcessPhoto();

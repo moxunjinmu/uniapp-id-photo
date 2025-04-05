@@ -45,6 +45,7 @@ export function usePhotoProcessor() {
         semitransparency: false, // 证件照不需要半透明
       };
       console.log("生产环境使用真实API", import.meta.env.VITE_APP_ENV);
+
       // 根据证件照类型调整参数
       if (photoType) {
         // 根据证件照尺寸设置合适的输出尺寸
@@ -176,8 +177,12 @@ export function usePhotoProcessor() {
     photoType?: PhotoType,
   ): Promise<string> => {
     try {
+      console.log("usePhotoProcessor.changeBackgroundColor 开始", { photoUrl, backgroundColor });
+
       // 使用前端方法更换背景色
       const newImagePath = await changeBackground(photoUrl, { backgroundColor });
+      console.log("usePhotoProcessor.changeBackgroundColor 成功", { newImagePath });
+
       return newImagePath;
     } catch (error: any) {
       console.error("更换背景色失败:", error.message);

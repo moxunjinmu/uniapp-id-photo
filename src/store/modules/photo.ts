@@ -7,8 +7,10 @@ export interface PhotoState {
   photoTypeId: string;
   // 原始图片路径
   sourceImagePath: string;
-  // 处理后的图片路径
+  // 处理后的图片路径（透明背景）
   processedImagePath: string;
+  // 带背景色的图片路径
+  coloredImagePath: string;
   // 布局排版后的图片路径
   layoutImagePath: string;
   // 当前选择的背景色
@@ -27,6 +29,7 @@ export const usePhotoStore = defineStore("photo", () => {
     photoTypeId: "",
     sourceImagePath: "",
     processedImagePath: "",
+    coloredImagePath: "",
     layoutImagePath: "",
     backgroundColor: "#2196F3", // 默认蓝色背景
     transparentBackgroundColor: "#00000000", // 透明背景色
@@ -40,6 +43,7 @@ export const usePhotoStore = defineStore("photo", () => {
       photoTypeId: "",
       sourceImagePath: "",
       processedImagePath: "",
+      coloredImagePath: "",
       layoutImagePath: "",
       backgroundColor: "#2196F3",
       transparentBackgroundColor: "#00000000",
@@ -58,10 +62,15 @@ export const usePhotoStore = defineStore("photo", () => {
     photoState.value.sourceImagePath = imagePath;
   };
 
-  // 设置处理后的图片路径
+  // 设置处理后的图片路径（透明背景）
   const setProcessedImage = (imagePath: string) => {
     photoState.value.processedImagePath = imagePath;
     photoState.value.isProcessed = true;
+  };
+
+  // 设置带背景色的图片路径
+  const setColoredImage = (imagePath: string) => {
+    photoState.value.coloredImagePath = imagePath;
   };
 
   // 设置布局排版图片
@@ -103,6 +112,7 @@ export const usePhotoStore = defineStore("photo", () => {
     setPhotoType,
     setSourceImage,
     setProcessedImage,
+    setColoredImage,
     setLayoutImage,
     setBackgroundColor,
     setTransparentBackgroundColor,

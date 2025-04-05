@@ -1,14 +1,10 @@
 import { PhotoType } from "@/enums/PhotoType";
-import {
-  removeBackground,
-  // changeBackgroundColor as changeBackground,
-  mockRemoveBackground,
-  createPhotoLayout,
-  addWatermark,
-} from "@/api/image";
+import { removeBackground, mockRemoveBackground, createPhotoLayout, addWatermark } from "@/api/image";
 import { RemoveBackgroundOptions } from "@/enums";
 import { useToast } from "./useToast";
 import { readFile, saveFile } from "@/utils/file";
+import { usePhotoStore } from "@/store/modules/photo";
+import { useImageBackground } from "./useImageBackground";
 
 export interface PhotoProcessorOptions {
   backgroundColor: string;
@@ -22,6 +18,8 @@ export interface PhotoProcessResult {
 
 export function usePhotoProcessor() {
   const { showToast } = useToast();
+  const photoStore = usePhotoStore();
+  const { changeBackground } = useImageBackground();
   // 生产环境使用真实API，开发环境使用模拟API
   let processedImageUrl;
   // 获取平台信息
@@ -39,7 +37,7 @@ export function usePhotoProcessor() {
       // 根据证件照类型设置适当的API参数
       const apiOptions: RemoveBackgroundOptions = {
         image_file_b64: "",
-        bg_color: backgroundColor,
+        bg_color: photoStore.photoState.transparentBackgroundColor, // 使用透明背景色
         size: "preview",
         type: "person", // 证件照主要是人像
         format: "png", // 透明背景最好用PNG
@@ -85,6 +83,8 @@ export function usePhotoProcessor() {
       const fileData = await readFile(imageUrl);
       const base64 = uni.arrayBufferToBase64(fileData as ArrayBuffer);
       apiOptions.image_file_b64 = base64;
+
+      // 第一步：调用后端API获取透明背景图片
       if (import.meta.env.VITE_APP_ENV === "production" || platform === "android" || platform === "devtools") {
         // 使用真实API
         const res = await removeBackground(apiOptions);
@@ -100,6 +100,16 @@ export function usePhotoProcessor() {
       // 这里简单处理，实际应该对照片进行等比例缩小
       const thumbnailUrl = processedImageUrl;
       console.log("生成缩略图", { thumbnailUrl });
+
+      // 第二步：如果用户选择的背景色不是透明色，则在前端处理背景色
+      if (backgroundColor !== photoStore.photoState.transparentBackgroundColor) {
+        console.log("在前端处理背景色", backgroundColor);
+        const newImagePath = await changeBackground(processedImageUrl, { backgroundColor });
+        return {
+          photoUrl: newImagePath,
+          thumbnailUrl: newImagePath,
+        };
+      }
 
       return {
         photoUrl: processedImageUrl,
@@ -162,48 +172,13 @@ export function usePhotoProcessor() {
   const changeBackgroundColor = async (
     photoUrl: string,
     backgroundColor: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     photoType?: PhotoType,
   ): Promise<string> => {
     try {
-      // 准备API参数
-      const apiOptions: RemoveBackgroundOptions = {
-        format: "png", // 透明背景最好用PNG
-      };
-      console.log("生产环境使用真实更换背景色API", import.meta.env.VITE_APP_ENV);
-      // 如果提供了photoType，根据证件照类型调整参数
-      if (photoType) {
-        // 设置裁剪边距，根据证件照类型调整
-        if (photoType.category === "standard") {
-          apiOptions.crop_margin = "0";
-        } else {
-          apiOptions.crop_margin = "10";
-        }
-
-        // 根据证件照尺寸设置合适的输出尺寸
-        if (photoType.pixelWidth && photoType.pixelHeight) {
-          if (photoType.pixelWidth < 1000 || photoType.pixelHeight < 1000) {
-            apiOptions.size = "small";
-          } else if (photoType.pixelWidth > 2000 || photoType.pixelHeight > 2000) {
-            apiOptions.size = "hd";
-          }
-        }
-      }
-
-      if (import.meta.env.VITE_APP_ENV === "production") {
-        console.log("请求地址:", "https://api.remove.bg/v1.0/removebg");
-        // 使用真实API
-        // TODO
-        // return await changeBackground(photoUrl, backgroundColor, apiOptions);
-        return "String";
-      } else {
-        // 开发环境使用模拟API
-        console.log("模拟更换背景色:", backgroundColor);
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(photoUrl);
-          }, 800);
-        });
-      }
+      // 使用前端方法更换背景色
+      const newImagePath = await changeBackground(photoUrl, { backgroundColor });
+      return newImagePath;
     } catch (error: any) {
       console.error("更换背景色失败:", error.message);
       showToast("更换背景色失败，请重试");

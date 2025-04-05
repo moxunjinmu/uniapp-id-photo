@@ -138,6 +138,7 @@ const changeBackgroundColor = async (color: string) => {
   showLoading("更换背景色中...");
 
   try {
+    // 使用前端方法更换背景色
     const newImagePath = await changePhotoBackground(imgPath.value, color);
     imgPath.value = newImagePath;
     selectedBackgroundColor.value = color;
@@ -255,8 +256,9 @@ const handleProcessPhoto = async () => {
   showLoading("正在处理照片...");
 
   try {
+    // 使用透明背景色处理照片
     const result = await processPhoto(rawImgPath.value, {
-      backgroundColor: selectedBackgroundColor.value,
+      backgroundColor: photoStore.photoState.transparentBackgroundColor,
       photoType: photoType.value,
     });
 
@@ -265,9 +267,18 @@ const handleProcessPhoto = async () => {
     // 更新store中的处理后图片
     photoStore.setProcessedImage(result.thumbnailUrl);
 
+    // 如果用户选择的背景色不是透明色，则在前端处理背景色
+    if (selectedBackgroundColor.value !== photoStore.photoState.transparentBackgroundColor) {
+      console.log("在前端处理背景色", selectedBackgroundColor.value);
+      const newImagePath = await changePhotoBackground(imgPath.value, selectedBackgroundColor.value);
+      imgPath.value = newImagePath;
+      // 更新store中的处理后图片
+      photoStore.setProcessedImage(newImagePath);
+    }
+
     // 根据预览模式决定是否需要创建排版
     if (previewMode.value === PreviewMode.Layout) {
-      layoutImagePath.value = await generatePhotoLayout(result.photoUrl, 4);
+      layoutImagePath.value = await generatePhotoLayout(imgPath.value, 4);
       // 更新store中的排版图片
       photoStore.setLayoutImage(layoutImagePath.value);
     }

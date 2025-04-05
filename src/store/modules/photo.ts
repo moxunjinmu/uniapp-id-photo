@@ -13,6 +13,8 @@ export interface PhotoState {
   layoutImagePath: string;
   // 当前选择的背景色
   backgroundColor: string;
+  // 透明背景色参数
+  transparentBackgroundColor: string;
   // 当前的预览模式
   previewMode: "single" | "layout";
   // 是否处理完成
@@ -27,6 +29,7 @@ export const usePhotoStore = defineStore("photo", () => {
     processedImagePath: "",
     layoutImagePath: "",
     backgroundColor: "#2196F3", // 默认蓝色背景
+    transparentBackgroundColor: "#00000000", // 透明背景色
     previewMode: "single",
     isProcessed: false,
   });
@@ -39,6 +42,7 @@ export const usePhotoStore = defineStore("photo", () => {
       processedImagePath: "",
       layoutImagePath: "",
       backgroundColor: "#2196F3",
+      transparentBackgroundColor: "#00000000",
       previewMode: "single",
       isProcessed: false,
     };
@@ -70,6 +74,11 @@ export const usePhotoStore = defineStore("photo", () => {
     photoState.value.backgroundColor = color;
   };
 
+  // 设置透明背景色
+  const setTransparentBackgroundColor = (color: string) => {
+    photoState.value.transparentBackgroundColor = color;
+  };
+
   // 设置预览模式
   const setPreviewMode = (mode: "single" | "layout") => {
     photoState.value.previewMode = mode;
@@ -96,6 +105,7 @@ export const usePhotoStore = defineStore("photo", () => {
     setProcessedImage,
     setLayoutImage,
     setBackgroundColor,
+    setTransparentBackgroundColor,
     setPreviewMode,
     setProcessedState,
     initPhotoData,

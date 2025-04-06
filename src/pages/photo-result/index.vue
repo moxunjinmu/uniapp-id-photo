@@ -16,21 +16,21 @@
         <!-- 切换按钮 -->
         <view class="flex justify-between mb-3">
           <view
-            :class="[previewMode === 'single' ? 'bg-indigo-500 text-white' : 'bg-gray-100 text-gray-600']"
+            :class="[previewMode === PreviewMode.Single ? 'bg-indigo-500 text-white' : 'bg-gray-100 text-gray-600']"
             class="px-4 py-2 rounded-full text-26rpx transition-colors"
-            @tap="previewMode = 'single'">
+            @tap="togglePreviewMode(PreviewMode.Single)">
             单张预览
           </view>
           <view
-            :class="[previewMode === 'layout' ? 'bg-indigo-500 text-white' : 'bg-gray-100 text-gray-600']"
+            :class="[previewMode === PreviewMode.Layout ? 'bg-indigo-500 text-white' : 'bg-gray-100 text-gray-600']"
             class="px-4 py-2 rounded-full text-26rpx transition-colors"
-            @tap="previewMode = 'layout'">
+            @tap="togglePreviewMode(PreviewMode.Layout)">
             排版预览
           </view>
         </view>
 
         <!-- 单张预览 -->
-        <view v-if="previewMode === 'single'" class="photo-preview">
+        <view v-if="previewMode === PreviewMode.Single" class="photo-preview">
           <image :src="imgPath" mode="aspectFit" class="preview-image">
             <!-- 水印 -->
             <text class="watermark">证件照预览</text>
@@ -39,7 +39,7 @@
 
         <!-- 排版预览 -->
         <view v-else class="layout-preview">
-          <image :src="imgPath" mode="aspectFit" class="layout-image"></image>
+          <image :src="layoutImagePath || imgPath" mode="aspectFit" class="layout-image"></image>
         </view>
 
         <!-- 照片信息 -->
@@ -88,7 +88,7 @@
       <view class="bg-yellow-50 p-3 rounded-xl">
         <view class="flex items-start">
           <IconFont name="info-circle" class="text-yellow-500 mt-1 mr-2" />
-          <text class="text-24rpx text-gray-700 leading-1.4">
+          <text class="text-24rpx text-gray-700 leading-relaxed">
             照片已自动处理完成，您可以选择背景颜色，下载或冲印照片。下载后的照片可用于各类电子证件提交。
           </text>
         </view>
@@ -104,84 +104,138 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
+import { usePhotoStore } from "@/store/modules/photo";
 import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
 import { useHistoryStore } from "@/store/modules/history";
 import { useToast } from "@/hooks/useToast";
-import { PhotoType } from "@/enums/PhotoType";
+import { PhotoType, PreviewMode } from "@/enums/PhotoType";
+import { checkDailyDownloadLimit, incrementDownloadCount } from "@/api/image";
 
 const configStore = useConfigStore();
+const photoStore = usePhotoStore();
 const historyStore = useHistoryStore();
-const { processPhoto } = usePhotoProcessor();
+const { processPhoto, changeBackgroundColor: changePhotoBackground, generatePhotoLayout } = usePhotoProcessor();
 const { showToast, showLoading, hideLoading } = useToast();
 
 // 页面状态
-const photoTypeId = ref<string>("");
-const rawImgPath = ref<string>("");
-const imgPath = ref<string>("");
 const photoType = ref<PhotoType | null>(null);
-const previewMode = ref<"single" | "layout">("single"); // single 或 layout
+const rawImgPath = computed(() => photoStore.photoState.sourceImagePath);
+const transparentImgPath = computed(() => photoStore.photoState.processedImagePath || "");
+const coloredImgPath = computed(() => photoStore.photoState.coloredImagePath || "");
+const imgPath = ref<string>(coloredImgPath.value || transparentImgPath.value || "");
+const previewMode = ref<PreviewMode>(
+  photoStore.photoState.previewMode === "layout" ? PreviewMode.Layout : PreviewMode.Single,
+);
 const backgroundColors = ref<Array<{ name: string; value: string }>>(configStore.backgroundColors);
-const selectedBackgroundColor = ref<string>("#2196F3"); // 默认蓝色背景
-
-// 照片下载计数器，每日限制
-const getDownloadCount = () => {
-  const today = new Date().toISOString().split("T")[0];
-  const countData = uni.getStorageSync("download_count") || "{}";
-  const countObj = JSON.parse(countData);
-  return countObj[today] || 0;
-};
-
-const incrementDownloadCount = () => {
-  const today = new Date().toISOString().split("T")[0];
-  const countData = uni.getStorageSync("download_count") || "{}";
-  const countObj = JSON.parse(countData);
-  countObj[today] = (countObj[today] || 0) + 1;
-  uni.setStorageSync("download_count", JSON.stringify(countObj));
-};
+const selectedBackgroundColor = ref<string>(photoStore.photoState.backgroundColor);
+const layoutImagePath = ref<string>(photoStore.photoState.layoutImagePath || "");
 
 // 更换背景色
 const changeBackgroundColor = async (color: string) => {
-  if (selectedBackgroundColor.value === color) return;
+  if (selectedBackgroundColor.value === color || !transparentImgPath.value) return;
 
   showLoading("更换背景色中...");
-  selectedBackgroundColor.value = color;
+  console.log("开始更换背景色", { color, transparentImagePath: transparentImgPath.value });
 
   try {
-    // 模拟背景色更换操作
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    // 使用前端方法更换背景色，基于透明背景图片
+    console.log("调用changePhotoBackground函数");
+    const newImagePath = await changePhotoBackground(transparentImgPath.value, color);
+    console.log("背景色更换成功，新图片路径:", newImagePath);
+
+    // 更新本地状态
+    imgPath.value = newImagePath;
+    selectedBackgroundColor.value = color;
+
+    // 更新store中的背景色和带背景色的图片
+    photoStore.setBackgroundColor(color);
+    photoStore.setColoredImage(newImagePath);
+
+    // 如果当前是排版预览模式，也需要更新排版图片
+    if (previewMode.value === PreviewMode.Layout) {
+      console.log("更新排版图片");
+      const newLayoutPath = await generatePhotoLayout(newImagePath, 4);
+      layoutImagePath.value = newLayoutPath;
+      photoStore.setLayoutImage(newLayoutPath);
+    }
+
     hideLoading();
     showToast("背景色更换成功");
   } catch (error: any) {
     hideLoading();
     showToast("背景色更换失败");
-    console.log(error.message);
+    console.error("背景色更换失败:", error.message);
+  }
+};
+
+// 切换预览模式
+const togglePreviewMode = async (mode: PreviewMode) => {
+  if (previewMode.value === mode) return;
+
+  previewMode.value = mode;
+  // 更新store中的预览模式
+  photoStore.setPreviewMode(mode === PreviewMode.Layout ? "layout" : "single");
+
+  if (mode === PreviewMode.Layout && !layoutImagePath.value) {
+    showLoading("生成排版预览中...");
+    try {
+      const layoutPath = await generatePhotoLayout(imgPath.value, 4);
+      layoutImagePath.value = layoutPath;
+      // 更新store中的排版图片
+      photoStore.setLayoutImage(layoutPath);
+      hideLoading();
+    } catch (error) {
+      hideLoading();
+      showToast("生成排版预览失败");
+      console.error("生成排版预览失败:", error);
+    }
   }
 };
 
 // 下载照片
-const downloadPhoto = () => {
-  const downloadCount = getDownloadCount();
+const downloadPhoto = async () => {
+  // 检查下载限制
+  const { canDownload } = checkDailyDownloadLimit();
 
-  if (downloadCount >= 5) {
-    showToast("今日下载次数已达上限（5次）");
+  if (!canDownload) {
+    showToast("今日下载次数已达上限，请明天再试");
     return;
   }
 
   showLoading("正在下载...");
 
-  // 模拟下载操作
-  setTimeout(() => {
-    hideLoading();
-    incrementDownloadCount();
+  try {
+    // 根据当前预览模式选择要下载的图片
+    const downloadPath =
+      previewMode.value === PreviewMode.Single ? imgPath.value : layoutImagePath.value || imgPath.value;
+
+    // 保存图片到相册
+    await uni.saveImageToPhotosAlbum({
+      filePath: downloadPath,
+    });
+
+    // 增加下载计数
+    const newCount = incrementDownloadCount();
+    const remaining = 10 - newCount; // 假设每日限制10次
 
     // 保存到历史记录
     saveToHistory();
 
-    showToast("下载成功");
-  }, 1000);
+    hideLoading();
+    showToast(`下载成功，今日剩余下载次数: ${remaining}`);
+  } catch (error: any) {
+    hideLoading();
+    console.error("下载失败:", error);
+
+    if (error.errMsg?.includes("auth deny")) {
+      showToast("请授权保存图片到相册");
+    } else {
+      showToast("下载失败，请重试");
+    }
+  }
 };
 
 // 模拟冲印订单
@@ -210,12 +264,37 @@ const handleProcessPhoto = async () => {
   showLoading("正在处理照片...");
 
   try {
+    // 使用透明背景色处理照片
     const result = await processPhoto(rawImgPath.value, {
-      backgroundColor: selectedBackgroundColor.value,
+      backgroundColor: photoStore.photoState.transparentBackgroundColor,
       photoType: photoType.value,
     });
 
-    imgPath.value = result.photoUrl;
+    console.log("照片处理结果：", result);
+
+    // 保存透明背景图片
+    photoStore.setProcessedImage(result.thumbnailUrl);
+
+    // 如果用户选择的背景色不是透明色，则在前端处理背景色
+    if (selectedBackgroundColor.value !== photoStore.photoState.transparentBackgroundColor) {
+      console.log("在前端处理背景色", selectedBackgroundColor.value);
+      const newImagePath = await changePhotoBackground(result.thumbnailUrl, selectedBackgroundColor.value);
+
+      // 保存带背景色的图片
+      photoStore.setColoredImage(newImagePath);
+      imgPath.value = newImagePath;
+    } else {
+      // 如果用户选择的是透明背景色，则直接使用透明背景图片
+      imgPath.value = result.thumbnailUrl;
+    }
+
+    // 根据预览模式决定是否需要创建排版
+    if (previewMode.value === PreviewMode.Layout) {
+      layoutImagePath.value = await generatePhotoLayout(imgPath.value, 4);
+      // 更新store中的排版图片
+      photoStore.setLayoutImage(layoutImagePath.value);
+    }
+    console.log("排版图片路径：", layoutImagePath.value);
     hideLoading();
   } catch (error) {
     hideLoading();
@@ -224,42 +303,48 @@ const handleProcessPhoto = async () => {
   }
 };
 
-// 逻辑函数：处理照片类型
-const handlePhotoType = (photoTypeId: string) => {
-  const photoType = configStore.getPhotoTypeById(photoTypeId);
-  if (!photoType) {
-    showToast("未找到对应照片类型");
-    throw new Error("PhotoType not found");
-  }
-  return photoType;
-};
+onLoad(() => {
+  try {
+    // 从store中获取照片类型ID和图片路径
+    const photoTypeId = photoStore.photoState.photoTypeId;
 
-// 逻辑函数：设置背景色
-const setDefaultBackground = (photoType: PhotoType) => {
-  if (photoType.backgroundColor) {
-    const color = backgroundColors.value.find((c) => c.name.includes(photoType.backgroundColor!));
-    selectedBackgroundColor.value = color?.value || "#FFFFFF"; // 提供默认值
-  }
-};
+    if (photoTypeId && rawImgPath.value) {
+      // 获取照片类型
+      photoType.value = configStore.getPhotoTypeById(photoTypeId) || null;
 
-onLoad((options: any) => {
-  // 获取路由参数
-  photoTypeId.value = options.id || "";
-  rawImgPath.value = decodeURIComponent(options.imgPath || "");
+      if (photoType.value) {
+        // 如果已经有处理好的图片，直接使用
+        if (photoStore.photoState.processedImagePath) {
+          // 如果有带背景色的图片，优先使用
+          if (photoStore.photoState.coloredImagePath) {
+            imgPath.value = photoStore.photoState.coloredImagePath;
+          } else {
+            imgPath.value = photoStore.photoState.processedImagePath;
+          }
+        } else {
+          // 处理照片
+          handleProcessPhoto();
+        }
 
-  if (photoTypeId.value) {
-    photoType.value = handlePhotoType(photoTypeId.value);
-
-    // 设置默认背景色
-    setDefaultBackground(photoType.value);
-
-    // 处理照片
-    handleProcessPhoto();
-  } else {
-    showToast("参数错误");
-    setTimeout(() => {
-      uni.navigateBack();
-    }, 1500);
+        // 如果已经有排版图片，直接使用
+        if (photoStore.photoState.layoutImagePath) {
+          layoutImagePath.value = photoStore.photoState.layoutImagePath;
+        }
+      } else {
+        showToast("未找到对应照片类型");
+        setTimeout(() => {
+          uni.navigateBack();
+        }, 1500);
+      }
+    } else {
+      showToast("参数错误，请重新选择照片");
+      setTimeout(() => {
+        uni.navigateBack();
+      }, 1500);
+    }
+  } catch (error) {
+    console.error("加载照片结果页面失败:", error);
+    showToast("加载失败，请重试");
   }
 });
 </script>

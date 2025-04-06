@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>登录 - 证件照小程序</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        height: 100vh;
+        background-color: #f7f7f7;
+        overflow: hidden;
+      }
+      .status-bar {
+        height: 44px;
+        background-color: #f7f7f7;
+        position: relative;
+        z-index: 10;
+      }
+      .login-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .input-field {
+        background: #f0f0f0;
+        border-radius: 9999px;
+        padding: 12px 20px;
+      }
+      .countdown-btn {
+        background: #e0e7ff;
+        color: #6366f1;
+        border-radius: 9999px;
+        padding: 8px 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 状态栏 -->
+    <div class="status-bar flex items-center px-4">
+      <a href="home.html" class="text-gray-500">
+        <i class="fas fa-chevron-left mr-2"></i>
+      </a>
+      <div class="text-sm font-medium">登录/注册</div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="px-4 pt-8 pb-20 overflow-auto h-full">
+      <!-- 图片展示卡片 -->
+      <div class="image-card login-card mb-6">
+        <div id="dynamic-bg" class="w-full aspect-[16/9] bg-gray-100 rounded-2xl overflow-hidden"></div>
+      </div>
+
+      <div class="login-card p-6">
+        <h2 class="text-xl font-bold mb-6">手机号登录</h2>
+
+        <div id="phone-login">
+          <!-- 手机号输入 -->
+          <div class="mb-4">
+            <div class="input-field flex items-center">
+              <i class="fas fa-mobile-alt text-gray-400 mr-2"></i>
+              <input
+                type="tel"
+                placeholder="请输入手机号"
+                class="w-full bg-transparent focus:outline-none"
+                maxlength="11" />
+            </div>
+          </div>
+
+          <!-- 验证码输入 -->
+          <div class="mb-6">
+            <div class="flex gap-2">
+              <div class="input-field flex-1 flex items-center">
+                <i class="fas fa-sms text-gray-400 mr-2"></i>
+                <input
+                  type="text"
+                  placeholder="验证码"
+                  class="w-full bg-transparent focus:outline-none"
+                  maxlength="6" />
+              </div>
+              <button class="countdown-btn text-sm font-medium">获取验证码</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="password-login" class="hidden">
+          <!-- 账号输入 -->
+          <div class="mb-4">
+            <div class="input-field flex items-center">
+              <i class="fas fa-user text-gray-400 mr-2"></i>
+              <input
+                type="text"
+                placeholder="手机号/邮箱"
+                class="w-full bg-transparent focus:outline-none"
+                maxlength="50" />
+            </div>
+          </div>
+
+          <!-- 密码输入 -->
+          <div class="mb-6">
+            <div class="input-field flex items-center">
+              <i class="fas fa-lock text-gray-400 mr-2"></i>
+              <input
+                type="password"
+                placeholder="请输入密码"
+                class="w-full bg-transparent focus:outline-none"
+                maxlength="20" />
+            </div>
+            <div class="mt-2 text-right text-sm text-gray-500">
+              <a href="#" class="hover:text-indigo-500">忘记密码？</a>
+            </div>
+          </div>
+        </div>
+
+        <div id="qq-login" class="hidden">
+          <div class="flex justify-center items-center py-8">
+            <div class="text-center">
+              <div class="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center mx-auto mb-4">
+                <i class="fab fa-qq text-white text-4xl"></i>
+              </div>
+              <p class="text-gray-600 mb-4">点击按钮一键登录</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="wechat-login" class="hidden">
+          <div class="flex justify-center items-center py-8">
+            <div class="text-center">
+              <div class="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-4">
+                <i class="fab fa-weixin text-white text-4xl"></i>
+              </div>
+              <p class="text-gray-600 mb-4">点击按钮一键登录</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 登录卡片 -->
+        <button
+          class="w-full bg-indigo-500 text-white rounded-full py-3 font-medium hover:bg-indigo-600 active:scale-95 transition-all duration-200">
+          立即登录
+        </button>
+      </div>
+    </div>
+
+    <!-- 底部登录方式切换 -->
+    <div class="login-bottom-nav flex justify-center items-center">
+      <div class="login-method-container flex justify-center items-center">
+        <div class="login-method-item login-method-active" data-login-type="phone">
+          <i class="fas fa-mobile-alt login-method-icon"></i>
+          <span>手机登录</span>
+        </div>
+        <div class="login-divider"></div>
+        <div class="login-method-item" data-login-type="password">
+          <i class="fas fa-lock login-method-icon"></i>
+          <span>密码登录</span>
+        </div>
+        <div class="login-divider"></div>
+        <div class="login-method-item" data-login-type="qq">
+          <i class="fab fa-qq login-method-icon"></i>
+          <span>QQ登录</span>
+        </div>
+        <div class="login-divider"></div>
+        <div class="login-method-item" data-login-type="wechat">
+          <i class="fab fa-weixin login-method-icon"></i>
+          <span>微信登录</span>
+        </div>
+      </div>
+    </div>
+    <style>
+      .image-card {
+        position: relative;
+      }
+      #dynamic-bg {
+        transition: opacity 0.3s ease;
+      }
+      /* 底部登录方式切换样式 */
+      .login-bottom-nav {
+        position: fixed;
+        bottom: 70px;
+        left: 0;
+        right: 0;
+        background-color: #f7f7f7;
+        padding: 15px 0;
+        border-top: 1px solid #eaeaea;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+      .login-method-container {
+        width: 90%;
+        max-width: 500px;
+      }
+      .login-method-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0 15px;
+        font-size: 12px;
+        color: #999;
+        cursor: pointer;
+      }
+      .login-method-icon {
+        font-size: 24px;
+        margin-bottom: 5px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .login-method-active {
+        color: #6366f1;
+      }
+      .login-method-active .login-method-icon {
+        background-color: #e0e7ff;
+      }
+      .login-divider {
+        width: 1px;
+        height: 30px;
+        background-color: #eaeaea;
+        margin: 0 5px;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const bgContainer = document.getElementById("dynamic-bg");
+        const card = document.querySelector(".image-card");
+        const cardWithMargin = document.querySelector(".image-card");
+        const rect = cardWithMargin.getBoundingClientRect();
+
+        const width = Math.floor(rect.width * 2);
+        const height = Math.floor(rect.height * 2);
+        bgContainer.style.backgroundImage = `url(https://picsum.photos/${width}/${height})`;
+
+        // 添加登录方式切换功能
+        const loginMethods = document.querySelectorAll(".login-method-item");
+        const loginForms = {
+          phone: document.getElementById("phone-login"),
+          password: document.getElementById("password-login"),
+          qq: document.getElementById("qq-login"),
+          wechat: document.getElementById("wechat-login"),
+        };
+
+        loginMethods.forEach((method) => {
+          method.addEventListener("click", () => {
+            // 移除所有活跃状态
+            loginMethods.forEach((m) => m.classList.remove("login-method-active"));
+
+            // 添加当前活跃状态
+            method.classList.add("login-method-active");
+
+            // 隐藏所有登录表单
+            Object.values(loginForms).forEach((form) => {
+              if (form) form.classList.add("hidden");
+            });
+
+            // 显示当前登录表单
+            const loginType = method.getAttribute("data-login-type");
+            if (loginForms[loginType]) {
+              loginForms[loginType].classList.remove("hidden");
+
+              // 更新标题
+              const titles = {
+                phone: "手机号登录",
+                password: "账号密码登录",
+                qq: "QQ一键登录",
+                wechat: "微信一键登录",
+              };
+              document.querySelector(".login-card h2").textContent = titles[loginType];
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

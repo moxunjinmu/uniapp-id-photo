@@ -1,4 +1,9 @@
-import request from "@/utils/request";
+/*
+ * @Author: moxunjinmu
+ * @Date: 2025-03-24 22:17:04
+ * @Description:
+ */
+import { request } from "@/utils/request";
 
 const AuthAPI = {
   /**

@@ -1,4 +1,4 @@
-import request from "@/utils/request";
+import { request } from "@/utils/request";
 
 const USER_BASE_URL = "/api/v1/users";
 

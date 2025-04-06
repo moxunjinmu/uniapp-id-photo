@@ -21,5 +21,8 @@ export interface RemoveBackgroundOptions {
 }
 
 // API密钥
-// export const API_KEY = "SoCbsU5JUMhDSr14nbAEc6t5";
-export const API_KEY = "P9dP53GTCx8MK1KBNV4T1q5D";
+// export const API_KEY = "SoCbsU5JUMhDSr14nbAEc6t5"; // outlook
+// export const API_KEY = "P9dP53GTCx8MK1KBNV4T1q5D"; // gmail
+// export const API_KEY = "hp92xmPQzewjvqEY5nMXe29L"; // moxunidphoto
+
+export const API_KEY = "o2d3e9cA1m6EAeJNmP6QBqmK"; // moxunGmail

@@ -111,7 +111,7 @@ import { usePhotoStore } from "@/store/modules/photo";
 import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
 import { useToast } from "@/hooks/useToast";
 import { PhotoType, PreviewMode } from "@/enums/PhotoType";
-import { downloadFile, saveImageToPhotosAlbum } from "@/utils/file";
+import { saveImageToPhotosAlbum } from "@/utils/file";
 import { useImageBackground } from "@/hooks/useImageBackground";
 
 const configStore = useConfigStore();
@@ -211,41 +211,8 @@ const handleDownload = async () => {
     const fileName = `photo_${Date.now()}.png`;
     console.log("当前图片路径", currentImagePath);
 
-    // 检查是否是base64格式
-    const isBase64 = currentImagePath.startsWith("data:image/");
-    console.log("是否是base64格式:", isBase64);
-
-    // 检查平台
-    const platform = uni.getSystemInfoSync()?.platform || "h5";
-    console.log("当前平台:", platform);
-
-    // 如果是base64格式，直接使用saveImageToPhotosAlbum
-    if (isBase64) {
-      await saveImageToPhotosAlbum(currentImagePath);
-      uni.showToast({
-        title: "下载成功",
-        icon: "success",
-      });
-      return;
-    }
-
-    // 如果是微信开发者环境，需要特殊处理
-    if (platform === "devtools") {
-      // 在开发者工具中，直接使用saveImageToPhotosAlbum
-      await saveImageToPhotosAlbum(currentImagePath);
-      uni.showToast({
-        title: "下载成功",
-        icon: "success",
-      });
-      return;
-    }
-
-    // 下载文件
-    const downloadedFilePath = await downloadFile(currentImagePath, fileName);
-    console.log("下载文件成功", downloadedFilePath);
-
     // 保存到相册
-    await saveImageToPhotosAlbum(downloadedFilePath);
+    await saveImageToPhotosAlbum(currentImagePath, fileName);
 
     uni.showToast({
       title: "下载成功",

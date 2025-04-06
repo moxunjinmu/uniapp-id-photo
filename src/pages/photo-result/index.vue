@@ -72,7 +72,7 @@
       <view class="grid grid-cols-2 gap-3 mb-4">
         <button
           class="bg-indigo-100 text-indigo-600 py-3 rounded-full text-32rpx flex items-center justify-center"
-          @tap="downloadPhoto">
+          @tap="handleDownload">
           <IconFont name="download" class="mr-2" />
           下载电子照
         </button>
@@ -105,20 +105,20 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { onLoad } from "@dcloudio/uni-app";
+import { onLoad, onUnload } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
 import { usePhotoStore } from "@/store/modules/photo";
 import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
-import { useHistoryStore } from "@/store/modules/history";
 import { useToast } from "@/hooks/useToast";
 import { PhotoType, PreviewMode } from "@/enums/PhotoType";
-import { checkDailyDownloadLimit, incrementDownloadCount } from "@/api/image";
+import { saveImageToPhotosAlbum } from "@/utils/file";
+import { useImageBackground } from "@/hooks/useImageBackground";
 
 const configStore = useConfigStore();
 const photoStore = usePhotoStore();
-const historyStore = useHistoryStore();
-const { processPhoto, changeBackgroundColor: changePhotoBackground, generatePhotoLayout } = usePhotoProcessor();
+const { processPhoto, generatePhotoLayout } = usePhotoProcessor();
 const { showToast, showLoading, hideLoading } = useToast();
+const { changeBackground, clearImageCache } = useImageBackground();
 
 // 页面状态
 const photoType = ref<PhotoType | null>(null);
@@ -133,41 +133,40 @@ const backgroundColors = ref<Array<{ name: string; value: string }>>(configStore
 const selectedBackgroundColor = ref<string>(photoStore.photoState.backgroundColor);
 const layoutImagePath = ref<string>(photoStore.photoState.layoutImagePath || "");
 
-// 更换背景色
+// 修改changeBackgroundColor函数，使用缓存的图片
 const changeBackgroundColor = async (color: string) => {
-  if (selectedBackgroundColor.value === color || !transparentImgPath.value) return;
-
-  showLoading("更换背景色中...");
-  console.log("开始更换背景色", { color, transparentImagePath: transparentImgPath.value });
+  if (color === selectedBackgroundColor.value || !transparentImgPath.value) return;
 
   try {
-    // 使用前端方法更换背景色，基于透明背景图片
-    console.log("调用changePhotoBackground函数");
-    const newImagePath = await changePhotoBackground(transparentImgPath.value, color);
-    console.log("背景色更换成功，新图片路径:", newImagePath);
+    console.log("开始更换背景色", color);
+    showLoading("更换背景色中...");
 
-    // 更新本地状态
+    // 使用透明背景图片作为基础图片
+    const newImagePath = await changeBackground(transparentImgPath.value, {
+      backgroundColor: color,
+    });
+
+    // 更新图片路径
     imgPath.value = newImagePath;
-    selectedBackgroundColor.value = color;
 
-    // 更新store中的背景色和带背景色的图片
-    photoStore.setBackgroundColor(color);
+    // 保存带背景色的图片路径到store
     photoStore.setColoredImage(newImagePath);
 
-    // 如果当前是排版预览模式，也需要更新排版图片
-    if (previewMode.value === PreviewMode.Layout) {
-      console.log("更新排版图片");
-      const newLayoutPath = await generatePhotoLayout(newImagePath, 4);
-      layoutImagePath.value = newLayoutPath;
-      photoStore.setLayoutImage(newLayoutPath);
+    // 更新背景色
+    selectedBackgroundColor.value = color;
+    photoStore.setBackgroundColor(color);
+
+    // 如果当前是布局预览模式，也更新布局图片
+    if (previewMode.value === PreviewMode.Layout && layoutImagePath.value) {
+      layoutImagePath.value = newImagePath;
     }
 
     hideLoading();
     showToast("背景色更换成功");
-  } catch (error: any) {
+  } catch (error) {
+    console.error("更换背景色失败:", error);
     hideLoading();
-    showToast("背景色更换失败");
-    console.error("背景色更换失败:", error.message);
+    showToast("更换背景色失败，请重试");
   }
 };
 
@@ -195,66 +194,42 @@ const togglePreviewMode = async (mode: PreviewMode) => {
   }
 };
 
-// 下载照片
-const downloadPhoto = async () => {
-  // 检查下载限制
-  const { canDownload } = checkDailyDownloadLimit();
-
-  if (!canDownload) {
-    showToast("今日下载次数已达上限，请明天再试");
-    return;
-  }
-
-  showLoading("正在下载...");
-
+// 下载图片
+const handleDownload = async () => {
   try {
-    // 根据当前预览模式选择要下载的图片
-    const downloadPath =
-      previewMode.value === PreviewMode.Single ? imgPath.value : layoutImagePath.value || imgPath.value;
-
-    // 保存图片到相册
-    await uni.saveImageToPhotosAlbum({
-      filePath: downloadPath,
-    });
-
-    // 增加下载计数
-    const newCount = incrementDownloadCount();
-    const remaining = 10 - newCount; // 假设每日限制10次
-
-    // 保存到历史记录
-    saveToHistory();
-
-    hideLoading();
-    showToast(`下载成功，今日剩余下载次数: ${remaining}`);
-  } catch (error: any) {
-    hideLoading();
-    console.error("下载失败:", error);
-
-    if (error.errMsg?.includes("auth deny")) {
-      showToast("请授权保存图片到相册");
-    } else {
-      showToast("下载失败，请重试");
+    // 获取当前显示的图片路径
+    const currentImagePath = imgPath.value;
+    if (!currentImagePath) {
+      uni.showToast({
+        title: "没有可下载的图片",
+        icon: "none",
+      });
+      return;
     }
+
+    // 生成文件名
+    const fileName = `photo_${Date.now()}.png`;
+    console.log("当前图片路径", currentImagePath);
+
+    // 保存到相册
+    await saveImageToPhotosAlbum(currentImagePath, fileName);
+
+    uni.showToast({
+      title: "下载成功",
+      icon: "success",
+    });
+  } catch (error) {
+    console.error("下载失败:", error);
+    uni.showToast({
+      title: "下载失败",
+      icon: "none",
+    });
   }
 };
 
 // 模拟冲印订单
 const mockPrintOrder = () => {
   showToast("冲印功能开发中，敬请期待");
-};
-
-// 保存到历史记录
-const saveToHistory = () => {
-  if (!photoType.value || !imgPath.value) return;
-
-  historyStore.savePhotoRecord({
-    photoUrl: imgPath.value,
-    thumbnailUrl: imgPath.value,
-    typeId: photoType.value.id,
-    typeName: photoType.value.name,
-    size: photoType.value.size,
-    backgroundColor: selectedBackgroundColor.value,
-  });
 };
 
 // 处理照片
@@ -278,7 +253,9 @@ const handleProcessPhoto = async () => {
     // 如果用户选择的背景色不是透明色，则在前端处理背景色
     if (selectedBackgroundColor.value !== photoStore.photoState.transparentBackgroundColor) {
       console.log("在前端处理背景色", selectedBackgroundColor.value);
-      const newImagePath = await changePhotoBackground(result.thumbnailUrl, selectedBackgroundColor.value);
+      const newImagePath = await changeBackground(result.thumbnailUrl, {
+        backgroundColor: selectedBackgroundColor.value,
+      });
 
       // 保存带背景色的图片
       photoStore.setColoredImage(newImagePath);
@@ -346,6 +323,12 @@ onLoad(() => {
     console.error("加载照片结果页面失败:", error);
     showToast("加载失败，请重试");
   }
+});
+
+// 在onUnload中清除缓存
+onUnload(() => {
+  console.log("页面卸载，清除图片缓存");
+  clearImageCache();
 });
 </script>
 

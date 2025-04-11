@@ -51,10 +51,13 @@
 
     <!-- 空状态 -->
     <view v-else class="empty-state">
-      <view class="flex flex-col items-center justify-center py-16">
-        <IconFont name="history" size="100rpx" class="text-gray-300 mb-4" />
-        <text class="text-30rpx text-gray-500 mb-2">暂无历史记录</text>
-        <text class="text-26rpx text-gray-400">拍摄或上传照片后将自动保存于此</text>
+      <view class="empty-icon">
+        <IconFont name="history" class="text-indigo-500" size="64rpx" />
+      </view>
+      <text class="text-36rpx font-bold text-gray-800 mb-2">暂无照片</text>
+      <text class="text-30rpx text-gray-500 mb-6">您拍摄的照片将会在这里显示7天</text>
+      <view class="bg-indigo-500 text-white px-6 py-2 rounded-full text-30rpx font-medium" @tap="goToCamera">
+        立即拍摄
       </view>
     </view>
   </view>
@@ -140,6 +143,13 @@ const handleViewPhoto = (record: any) => {
   });
 };
 
+// 跳转到拍照页面
+const goToCamera = () => {
+  uni.switchTab({
+    url: "/pages/index/index",
+  });
+};
+
 // 页面加载时初始化历史记录
 onLoad(() => {
   historyStore.initHistory();
@@ -191,10 +201,25 @@ onShow(() => {
 }
 
 .empty-state {
-  height: 60vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+  text-align: center;
+  height: 60vh;
+}
+
+.empty-icon {
+  width: 160rpx;
+  height: 160rpx;
+  background-color: #e0e7ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32rpx;
+  color: #6366f1;
+  font-size: 64rpx;
 }
 </style>

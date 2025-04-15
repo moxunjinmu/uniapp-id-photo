@@ -114,6 +114,7 @@
             <view class="text-24rpx text-gray-400 mt-2 flex justify-between items-center">
               <text>标准尺寸</text>
               <text
+                v-if="type.isPopular"
                 :class="`bg-${type.backgroundColor}-50 text-${type.backgroundColor}-500 px-2 py-0.5 rounded-full text-24rpx`">
                 热门
               </text>

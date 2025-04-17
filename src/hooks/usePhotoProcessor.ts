@@ -217,7 +217,7 @@ export function usePhotoProcessor() {
 
       return photoUrl; // 这里简单返回原图
     } catch (error: any) {
-      console.error("裁剪照片失败:", error.message);
+      console.error("裁剪照片失败: ", error.message);
       showToast("调整照片尺寸失败");
       return photoUrl;
     }

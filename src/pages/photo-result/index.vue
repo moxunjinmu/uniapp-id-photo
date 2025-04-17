@@ -108,6 +108,7 @@ import { ref, computed } from "vue";
 import { onLoad, onUnload } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
 import { usePhotoStore } from "@/store/modules/photo";
+import { useHistoryStore } from "@/store/modules/history"; // 新增导入
 import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
 import { useToast } from "@/hooks/useToast";
 import { PhotoType, PreviewMode } from "@/enums/PhotoType";
@@ -116,6 +117,7 @@ import { useImageBackground } from "@/hooks/useImageBackground";
 
 const configStore = useConfigStore();
 const photoStore = usePhotoStore();
+const historyStore = useHistoryStore(); // 新增获取 store 实例
 const { processPhoto, generatePhotoLayout } = usePhotoProcessor();
 const { showToast, showLoading, hideLoading } = useToast();
 const { changeBackground, clearImageCache } = useImageBackground();
@@ -132,6 +134,33 @@ const previewMode = ref<PreviewMode>(
 const backgroundColors = ref<Array<{ name: string; value: string }>>(configStore.backgroundColors);
 const selectedBackgroundColor = ref<string>(photoStore.photoState.backgroundColor);
 const layoutImagePath = ref<string>(photoStore.photoState.layoutImagePath || "");
+
+// 新增：保存到历史记录的辅助函数
+const saveCurrentPhotoToHistory = () => {
+  if (photoType.value && imgPath.value) {
+    console.log("准备保存历史记录", {
+      photoType: photoType.value,
+      imgPath: imgPath.value,
+      bgColor: selectedBackgroundColor.value,
+    });
+    try {
+      historyStore.savePhotoRecord({
+        photoUrl: imgPath.value, // 使用当前显示的图片路径
+        thumbnailUrl: imgPath.value, // 暂时使用相同路径作为缩略图
+        typeId: photoType.value.id,
+        typeName: photoType.value.name,
+        size: photoType.value.size,
+        backgroundColor: selectedBackgroundColor.value,
+      });
+      console.log("历史记录保存成功");
+    } catch (error) {
+      console.error("保存历史记录失败:", error);
+      // 这里可以选择是否提示用户保存失败
+    }
+  } else {
+    console.warn("无法保存历史记录：缺少照片类型或图片路径");
+  }
+};
 
 // 修改changeBackgroundColor函数，使用缓存的图片
 const changeBackgroundColor = async (color: string) => {
@@ -163,6 +192,7 @@ const changeBackgroundColor = async (color: string) => {
 
     hideLoading();
     showToast("背景色更换成功");
+    saveCurrentPhotoToHistory(); // 新增：更换背景色后保存
   } catch (error) {
     console.error("更换背景色失败:", error);
     hideLoading();
@@ -273,6 +303,7 @@ const handleProcessPhoto = async () => {
     }
     console.log("排版图片路径：", layoutImagePath.value);
     hideLoading();
+    saveCurrentPhotoToHistory(); // 新增：处理照片成功后保存
   } catch (error) {
     hideLoading();
     showToast("照片处理失败");
@@ -290,22 +321,27 @@ onLoad(() => {
       photoType.value = configStore.getPhotoTypeById(photoTypeId) || null;
 
       if (photoType.value) {
-        // 如果已经有处理好的图片，直接使用
-        if (photoStore.photoState.processedImagePath) {
-          // 如果有带背景色的图片，优先使用
-          if (photoStore.photoState.coloredImagePath) {
-            imgPath.value = photoStore.photoState.coloredImagePath;
-          } else {
-            imgPath.value = photoStore.photoState.processedImagePath;
-          }
-        } else {
-          // 处理照片
-          handleProcessPhoto();
+        let imageLoaded = false; // Flag to track if image is loaded
+
+        // Check if processed image exists (either colored or transparent)
+        if (photoStore.photoState.coloredImagePath) {
+          imgPath.value = photoStore.photoState.coloredImagePath;
+          imageLoaded = true;
+        } else if (photoStore.photoState.processedImagePath) {
+          imgPath.value = photoStore.photoState.processedImagePath;
+          imageLoaded = true;
         }
 
-        // 如果已经有排版图片，直接使用
-        if (photoStore.photoState.layoutImagePath) {
-          layoutImagePath.value = photoStore.photoState.layoutImagePath;
+        // If image loaded from cache, save history
+        if (imageLoaded) {
+          // Check if layout image exists
+          if (photoStore.photoState.layoutImagePath) {
+            layoutImagePath.value = photoStore.photoState.layoutImagePath;
+          }
+          saveCurrentPhotoToHistory(); // Save history after loading from cache
+        } else {
+          // If no cached image, process the photo
+          handleProcessPhoto(); // This function already saves history on success
         }
       } else {
         showToast("未找到对应照片类型");

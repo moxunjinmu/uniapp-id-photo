@@ -8,7 +8,7 @@
 
     <!-- 历史记录列表 -->
     <view v-if="photoRecords.length > 0" class="px-4">
-      <view class="text-24rpx text-gray-500 mb-3">照片将自动保存7天，过期后自动删除</view>
+      <view class="text-24rpx text-gray-500 mb-3 bg-yellow-200 rounded-md p-2">照片将自动保存7天，过期后自动删除</view>
 
       <view class="grid grid-cols-1 gap-3">
         <view v-for="record in photoRecords" :key="record.id" class="photo-record-card">

@@ -134,12 +134,21 @@ const handleFAQ = () => {
 
 // 关注公众号
 const handleFollowAccount = () => {
-  // 模拟公众号二维码
-  const qrCodeUrl = "https://example.com/qrcode.jpg";
+  // 使用本地公众号二维码图片
+  const qrCodeUrl = "/static/WechatAccount.png";
 
+  // 显示公众号二维码图片
   uni.previewImage({
     urls: [qrCodeUrl],
     current: qrCodeUrl,
+    showmenu: false,
+    success: () => {
+      console.log("公众号二维码展示成功");
+    },
+    fail: (err) => {
+      console.error("公众号二维码展示失败", err);
+      showToast("图片加载失败，请重试");
+    },
   });
 };
 

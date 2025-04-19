@@ -23,7 +23,7 @@
               <view class="flex items-center justify-between">
                 <text class="text-30rpx font-medium">{{ record.typeName }}</text>
                 <view class="delete-btn" @tap.stop="handleDelete(record.id)">
-                  <IconFont name="trash" class="text-gray-400" />
+                  <IconFont name="trash" class="text-red-500" />
                 </view>
               </view>
 
@@ -31,8 +31,17 @@
 
               <view class="flex justify-between items-center mt-2">
                 <text class="text-24rpx text-gray-500">{{ formatDate(record.createTime) }}</text>
-                <view class="bg-indigo-500 text-white text-24rpx px-3 py-1 rounded-full" @tap="handleViewPhoto(record)">
-                  查看
+                <view class="flex space-x-2">
+                  <view
+                    class="bg-green-500 text-white text-24rpx px-3 py-1 rounded-full"
+                    @tap="handleEditPhoto(record)">
+                    编辑
+                  </view>
+                  <view
+                    class="bg-indigo-500 text-white text-24rpx px-3 py-1 rounded-full"
+                    @tap="handleViewPhoto(record)">
+                    查看
+                  </view>
                 </view>
               </view>
 
@@ -140,6 +149,13 @@ const handleViewPhoto = (record: any) => {
   uni.previewImage({
     urls: [record.photoUrl],
     current: record.photoUrl,
+  });
+};
+
+// 编辑照片
+const handleEditPhoto = (record: any) => {
+  uni.navigateTo({
+    url: `/pages/detail/index?id=${record.id}&edit=true`,
   });
 };
 

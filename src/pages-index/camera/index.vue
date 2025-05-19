@@ -96,7 +96,7 @@ const handleTakePicture = async () => {
 const navigateToPhotoResult = () => {
   console.log("导航到照片结果页");
   uni.navigateTo({
-    url: "/pages/photo-result/index",
+    url: "/pages-index/photo-result/index",
   });
 };
 

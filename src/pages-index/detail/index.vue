@@ -174,14 +174,14 @@ const handleChooseFromAlbum = async () => {
 // 导航到相机页面
 const navigateToCamera = () => {
   uni.navigateTo({
-    url: "/pages/camera/index",
+    url: "/pages-index/camera/index",
   });
 };
 
 // 导航到结果页面
 const navigateToPhotoResult = () => {
   uni.navigateTo({
-    url: "/pages/photo-result/index",
+    url: "/pages-index/photo-result/index",
   });
 };
 

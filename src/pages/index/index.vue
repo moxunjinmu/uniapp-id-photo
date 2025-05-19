@@ -144,7 +144,7 @@ onLoad(() => {
 // 导航函数
 const navigateToSearch = () => {
   uni.navigateTo({
-    url: "/pages/search/index",
+    url: "/pages-index/search/index",
   });
 };
 
@@ -156,7 +156,7 @@ const navigateToToolbox = () => {
 
 const navigateToDetail = (id: string) => {
   uni.navigateTo({
-    url: `/pages/detail/index?id=${id}`,
+    url: `/pages-index/detail/index?id=${id}`,
   });
 };
 </script>

@@ -13,31 +13,7 @@
         "navigationBarTitleText": "首页"
       }
     },
-    {
-      "path": "pages/search/index",
-      "style": {
-        "navigationBarTitleText": "搜索"
-      }
-    },
-    {
-      "path": "pages/detail/index",
-      "style": {
-        "navigationBarTitleText": "证件照详情"
-      }
-    },
-    {
-      "path": "pages/camera/index",
-      "style": {
-        "navigationBarTitleText": "拍摄证件照",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/photo-result/index",
-      "style": {
-        "navigationBarTitleText": "拍照结果"
-      }
-    },
+
     {
       "path": "pages/toolbox/index",
       "style": {
@@ -55,12 +31,67 @@
       "style": {
         "navigationBarTitleText": "我的"
       }
+    }
+  ],
+  "subPackages": [
+    {
+      "root": "pages-sub",
+      "pages": [
+        {
+          "path": "photo-edit/index",
+          "style": {
+            "navigationBarTitleText": "照片编辑"
+          }
+        },
+        {
+          "path": "background-change/index",
+          "style": {
+            "navigationBarTitleText": "背景更换"
+          }
+        },
+        {
+          "path": "size-adjust/index",
+          "style": {
+            "navigationBarTitleText": "尺寸调整"
+          }
+        }
+      ]
     },
     {
-      "path": "pages/login/index",
-      "style": {
-        "navigationBarTitleText": "登录"
-      }
+      "root": "pages-index",
+      "pages": [
+        {
+          "path": "search/index",
+          "style": {
+            "navigationBarTitleText": "搜索"
+          }
+        },
+        {
+          "path": "detail/index",
+          "style": {
+            "navigationBarTitleText": "证件照详情"
+          }
+        },
+        {
+          "path": "camera/index",
+          "style": {
+            "navigationBarTitleText": "拍摄证件照",
+            "navigationStyle": "custom"
+          }
+        },
+        {
+          "path": "photo-result/index",
+          "style": {
+            "navigationBarTitleText": "拍照结果"
+          }
+        },
+        {
+          "path": "login/index",
+          "style": {
+            "navigationBarTitleText": "登录"
+          }
+        }
+      ]
     }
   ],
   "globalStyle": {

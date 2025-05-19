@@ -121,7 +121,7 @@ const handleLogin = () => {
   if (isLoggedIn.value) return;
 
   uni.navigateTo({
-    url: "/pages/login/index",
+    url: "/pages-index/login/index",
   });
 };
 

@@ -155,7 +155,7 @@ const handleViewPhoto = (record: any) => {
 // 编辑照片
 const handleEditPhoto = (record: any) => {
   uni.navigateTo({
-    url: `/pages/detail/index?id=${record.typeId}&edit=true&recordId=${record.id}`,
+    url: `/pages-index/detail/index?id=${record.typeId}&edit=true&recordId=${record.id}`,
   });
 };
 

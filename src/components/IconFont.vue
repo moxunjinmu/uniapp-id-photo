@@ -4,7 +4,7 @@
  * @Description:
 -->
 <template>
-  <text :class="['fas', `fa-${name}`]" :style="style"></text>
+  <text :class="['fas', `fa-${name}`]" :style="style" />
 </template>
 
 <script setup lang="ts">

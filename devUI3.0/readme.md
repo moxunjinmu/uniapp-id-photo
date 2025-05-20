@@ -124,3 +124,37 @@
 - 考虑iPhone X+系列的安全区域
 - 最大宽度限制：640px
 - 左右安全边距：15px
+
+图标：
+
+fa-address-card
+fa-arrow-left
+fa-camera
+fa-car
+fa-chevron-right
+fa-chevron-riqht
+fa-crop
+fa-download
+fa-file-alt
+fa-graduation-cap
+fa-id-badge
+fa-id-card
+fa-image
+fa-info-circle
+fa-maqic
+fa-mobile-alt
+fa-palette
+fa-plane
+fa-print
+fa-question-circle
+fa-qrcode
+fa-ruler
+fa-search
+fa-shield-alt
+fa-shopping-bag
+fa-sms
+fa-spinner
+fa-sync
+fa-times-circle
+fa-toolbox
+fa-user

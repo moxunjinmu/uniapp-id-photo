@@ -6,14 +6,14 @@
 <template>
   <view class="tool-card" @tap="handleTap">
     <view class="tool-icon" :class="[`bg-${color}-100`, `text-${color}-500`]">
-      <IconFont :name="icon" size="48rpx" />
+      <IcomoonFont :name="icon" size="48rpx" />
     </view>
     <view>
       <text class="font-medium text-gray-800 text-30rpx">{{ title }}</text>
       <text class="text-24rpx text-gray-500 block mt-1">{{ description }}</text>
     </view>
     <view class="ml-auto flex items-center h-full">
-      <IconFont name="chevron-right" class="text-gray-300 text-lg" />
+      <IcomoonFont name="chevron-right" class="text-gray-300 text-lg" />
     </view>
   </view>
 </template>

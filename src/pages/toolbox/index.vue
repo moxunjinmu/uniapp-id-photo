@@ -62,7 +62,7 @@ const toolList = ref<Tool[]>([
   {
     title: "尺寸调整",
     description: "调整照片尺寸和比例",
-    icon: "crop-alt",
+    icon: "ruler",
     color: "green",
     disabled: true,
   },

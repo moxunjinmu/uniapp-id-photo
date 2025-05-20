@@ -102,12 +102,12 @@
 
         <view class="grid grid-cols-2 gap-3">
           <view class="action-button bg-indigo-50 text-indigo-600" @tap="handleChooseFromAlbum">
-            <IconFont name="image" class="mr-2" />
+            <IcomoonFont name="image" class="mr-2" />
             <text>相册上传</text>
           </view>
 
           <view class="action-button bg-blue-50 text-blue-600" @tap="navigateToCamera">
-            <IconFont name="camera" class="mr-2" />
+            <IcomoonFont name="camera" class="mr-2" />
             <text>拍照上传</text>
           </view>
         </view>

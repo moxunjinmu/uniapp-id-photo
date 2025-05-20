@@ -23,7 +23,7 @@
         <!-- 返回按钮 -->
         <view class="control-button" @tap="navigateBack">
           <view class="control-icon-container">
-            <IconFont name="arrow-left" size="50rpx" color="#fff" />
+            <IcomoonFont name="arrow-left" size="50rpx" color="#fff" />
           </view>
         </view>
 
@@ -35,7 +35,7 @@
         <!-- 切换摄像头按钮 -->
         <view class="control-button" @tap="toggleCamera">
           <view class="control-icon-container">
-            <IconFont name="sync" size="50rpx" color="#fff" />
+            <IcomoonFont name="sync" size="50rpx" color="#fff" />
           </view>
         </view>
       </view>

@@ -23,7 +23,7 @@
               <view class="flex items-center justify-between">
                 <text class="text-30rpx font-medium">{{ record.typeName }}</text>
                 <view class="delete-btn" @tap.stop="handleDelete(record.id)">
-                  <IconFont name="trash" class="text-red-500" />
+                  <IcomoonFont name="trash" class="text-red-500" />
                 </view>
               </view>
 
@@ -61,7 +61,7 @@
     <!-- 空状态 -->
     <view v-else class="empty-state">
       <view class="empty-icon">
-        <IconFont name="history" class="text-indigo-500" size="64rpx" />
+        <IcomoonFont name="history" class="text-indigo-500" size="64rpx" />
       </view>
       <text class="text-36rpx font-bold text-gray-800 mb-2">暂无照片</text>
       <text class="text-30rpx text-gray-500 mb-6">您拍摄的照片将会在这里显示7天</text>

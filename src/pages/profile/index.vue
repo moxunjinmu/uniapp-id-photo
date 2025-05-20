@@ -11,7 +11,7 @@
           </view>
           <view v-else class="flex items-center" @tap="handleLogin">
             <text class="text-32rpx font-medium">点击登录</text>
-            <IconFont name="chevron-right" class="text-gray-400 ml-1" />
+            <IcomoonFont name="chevron-right" class="text-gray-400 ml-1" />
           </view>
         </view>
       </view>
@@ -26,31 +26,31 @@
       <view class="menu-item" @tap="mockFeature('我的订单')">
         <view class="flex items-center">
           <view class="menu-icon bg-blue-50">
-            <IconFont name="shopping-bag" class="text-blue-500" />
+            <IcomoonFont name="shopping-bag" class="text-blue-500" />
           </view>
           <text class="ml-3">我的订单</text>
         </view>
-        <IconFont name="chevron-right" class="text-gray-300" />
+        <IcomoonFont name="chevron-right" class="text-gray-300" />
       </view>
 
       <view class="menu-item" @tap="handleFAQ">
         <view class="flex items-center">
           <view class="menu-icon bg-green-50">
-            <IconFont name="question-circle" class="text-green-500" />
+            <IcomoonFont name="question-circle" class="text-green-500" />
           </view>
           <text class="ml-3">常见问题</text>
         </view>
-        <IconFont name="chevron-right" class="text-gray-300" />
+        <IcomoonFont name="chevron-right" class="text-gray-300" />
       </view>
 
       <view class="menu-item" @tap="handleFollowAccount">
         <view class="flex items-center">
           <view class="menu-icon bg-purple-50">
-            <IconFont name="qrcode" class="text-purple-500" />
+            <IcomoonFont name="qrcode" class="text-purple-500" />
           </view>
           <text class="ml-3">关注公众号</text>
         </view>
-        <IconFont name="chevron-right" class="text-gray-300" />
+        <IcomoonFont name="chevron-right" class="text-gray-300" />
       </view>
     </view>
 
@@ -63,31 +63,31 @@
       <view class="menu-item" @tap="mockFeature('关于产品')">
         <view class="flex items-center">
           <view class="menu-icon bg-amber-50">
-            <IconFont name="info-circle" class="text-amber-500" />
+            <IcomoonFont name="info-circle" class="text-amber-500" />
           </view>
           <text class="ml-3">关于产品</text>
         </view>
-        <IconFont name="chevron-right" class="text-gray-300" />
+        <IcomoonFont name="chevron-right" class="text-gray-300" />
       </view>
 
       <view class="menu-item" @tap="mockFeature('用户协议')">
         <view class="flex items-center">
           <view class="menu-icon bg-gray-50">
-            <IconFont name="file-alt" class="text-gray-500" />
+            <IcomoonFont name="file-alt" class="text-gray-500" />
           </view>
           <text class="ml-3">用户协议</text>
         </view>
-        <IconFont name="chevron-right" class="text-gray-300" />
+        <IcomoonFont name="chevron-right" class="text-gray-300" />
       </view>
 
       <view class="menu-item" @tap="mockFeature('隐私政策')">
         <view class="flex items-center">
           <view class="menu-icon bg-red-50">
-            <IconFont name="shield-alt" class="text-red-500" />
+            <IcomoonFont name="shield-alt" class="text-red-500" />
           </view>
           <text class="ml-3">隐私政策</text>
         </view>
-        <IconFont name="chevron-right" class="text-gray-300" />
+        <IcomoonFont name="chevron-right" class="text-gray-300" />
       </view>
     </view>
 

@@ -12,7 +12,7 @@
       <!-- 手机号输入 -->
       <view class="mb-4">
         <view class="input-field flex items-center">
-          <IconFont name="mobile-alt" class="text-gray-400 mr-2" />
+          <IcomoonFont name="mobile-alt" class="text-gray-400 mr-2" />
           <input
             v-model="phone"
             type="text"
@@ -28,7 +28,7 @@
       <view class="mb-6">
         <view class="flex gap-2">
           <view class="input-field flex-1 flex items-center">
-            <IconFont name="sms" class="text-gray-400 mr-2" />
+            <IcomoonFont name="sms" class="text-gray-400 mr-2" />
             <input
               v-model="smsCode"
               type="text"
@@ -56,7 +56,6 @@
 
 <script lang="ts" setup>
 import { useUserStore } from "@/store/modules/user";
-import IconFont from "@/components/IconFont.vue";
 import { onUnmounted, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 

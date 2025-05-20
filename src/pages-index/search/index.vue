@@ -3,7 +3,7 @@
     <!-- 搜索区域 -->
     <view class="px-4 py-3 bg-white sticky top-0 z-10">
       <view class="flex items-center bg-gray-100 rounded-full px-4 py-2">
-        <IconFont name="search" class="text-gray-400 mr-2" />
+        <IcomoonFont name="search" class="text-gray-400 mr-2" />
         <input
           class="flex-1 text-28rpx bg-transparent"
           type="text"
@@ -13,7 +13,7 @@
           @input="onSearch"
           @confirm="onSearch" />
         <view v-if="searchKeyword" class="p-1" @tap="clearSearch">
-          <IconFont name="times-circle" class="text-gray-400" />
+          <IcomoonFont name="times-circle" class="text-gray-400" />
         </view>
       </view>
     </view>
@@ -21,7 +21,7 @@
     <!-- 搜索结果 -->
     <view class="p-4">
       <view v-if="searchResults.length === 0" class="flex flex-col items-center justify-center py-10">
-        <IconFont name="search" size="80rpx" class="text-gray-300 mb-3" />
+        <IcomoonFont name="search" size="80rpx" class="text-gray-300 mb-3" />
         <text class="text-28rpx text-gray-500">未找到相关证件照</text>
       </view>
 
@@ -34,7 +34,7 @@
           <view class="flex items-center">
             <view
               :class="`bg-${item.backgroundColor}-100 w-100rpx h-100rpx rounded-lg flex items-center justify-center mr-4`">
-              <IconFont :name="item.icon" :class="`text-${item.backgroundColor}-500 text-40rpx`" />
+              <IcomoonFont :name="item.icon" :class="`text-${item.backgroundColor}-500 text-40rpx`" />
             </view>
             <view class="flex-1">
               <view class="flex items-center">
@@ -48,7 +48,7 @@
               <text class="text-26rpx text-gray-500 block mt-1">{{ item.size }}</text>
               <text class="text-24rpx text-gray-400 block mt-1">{{ item.description }}</text>
             </view>
-            <IconFont name="chevron-right" class="text-gray-300" />
+            <IcomoonFont name="chevron-right" class="text-gray-300" />
           </view>
         </view>
       </view>

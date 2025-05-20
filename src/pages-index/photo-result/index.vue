@@ -73,13 +73,13 @@
         <button
           class="bg-indigo-100 text-indigo-600 py-3 rounded-full text-32rpx flex items-center justify-center"
           @tap="handleDownload">
-          <IconFont name="download" class="mr-2" />
+          <IcomoonFont name="download" class="mr-2" />
           下载电子照
         </button>
         <button
           class="bg-indigo-500 text-white py-3 rounded-full text-32rpx flex items-center justify-center"
           @tap="mockPrintOrder">
-          <IconFont name="print" class="mr-2" />
+          <IcomoonFont name="print" class="mr-2" />
           冲印照片
         </button>
       </view>
@@ -87,7 +87,7 @@
       <!-- 提示文本 -->
       <view class="bg-yellow-50 p-3 rounded-xl">
         <view class="flex items-start">
-          <IconFont name="info-circle" class="text-yellow-500 mt-1 mr-2" />
+          <IcomoonFont name="info-circle" class="text-yellow-500 mt-1 mr-2" />
           <text class="text-24rpx text-gray-700 leading-relaxed">
             照片已自动处理完成，您可以选择背景颜色，下载或冲印照片。下载后的照片可用于各类电子证件提交。
           </text>
@@ -97,7 +97,7 @@
 
     <!-- 加载中/错误提示 -->
     <view v-else class="flex flex-col items-center justify-center h-full">
-      <IconFont name="spinner" class="text-gray-400 text-60rpx animate-spin mb-4" />
+      <IcomoonFont name="spinner" class="text-gray-400 text-60rpx animate-spin mb-4" />
       <text class="text-28rpx text-gray-500">正在处理照片...</text>
     </view>
   </view>

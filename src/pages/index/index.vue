@@ -11,7 +11,7 @@
       <!-- 搜索栏 -->
       <view class="mx-4 my-3 relative">
         <view class="bg-gray-100 rounded-full flex items-center px-4 py-2" @tap="navigateToSearch">
-          <IconFont name="search" class="text-gray-400 mr-2" />
+          <IcomoonFont name="search" class="text-gray-400 mr-2" />
           <text class="text-28rpx text-gray-400">搜索证件照尺寸...</text>
         </view>
       </view>
@@ -27,7 +27,7 @@
               <view>
                 <view class="flex items-center mb-2">
                   <view class="bg-indigo-100 w-80rpx h-80rpx rounded-full flex items-center justify-center mr-2">
-                    <IconFont name="camera" class="text-indigo-500" />
+                    <IcomoonFont name="camera" class="text-indigo-500" />
                   </view>
                   <text class="font-bold text-gray-800 text-32rpx">拍摄证件照</text>
                 </view>
@@ -37,14 +37,14 @@
               <view class="flex justify-between mt-2">
                 <view class="text-24rpx text-indigo-500 font-medium flex items-center">
                   <text>点击开始</text>
-                  <IconFont name="chevron-right" class="ml-1" />
+                  <IcomoonFont name="chevron-right" class="ml-1" />
                 </view>
                 <view class="flex space-x-1">
                   <view class="w-40rpx h-40rpx bg-indigo-100 rounded-full flex items-center justify-center">
-                    <IconFont name="id-card" class="text-indigo-500 text-24rpx" />
+                    <IcomoonFont name="id-card" class="text-indigo-500 text-24rpx" />
                   </view>
                   <view class="w-40rpx h-40rpx bg-indigo-100 rounded-full flex items-center justify-center">
-                    <IconFont name="user" class="text-indigo-500 text-24rpx" />
+                    <IcomoonFont name="user" class="text-indigo-500 text-24rpx" />
                   </view>
                 </view>
               </view>
@@ -59,7 +59,7 @@
               <view>
                 <view class="flex items-center mb-2">
                   <view class="bg-purple-100 w-80rpx h-80rpx rounded-full flex items-center justify-center mr-2">
-                    <IconFont name="toolbox" class="text-purple-500" />
+                    <IcomoonFont name="toolbox" class="text-purple-500" />
                   </view>
                   <text class="font-bold text-gray-800 text-32rpx">工具箱</text>
                 </view>
@@ -69,22 +69,22 @@
               <!-- 工具图标预览 -->
               <view class="grid grid-cols-3 gap-1 mt-2">
                 <view class="w-40rpx h-40rpx bg-purple-100 rounded-full flex items-center justify-center">
-                  <IconFont name="image" class="text-purple-500 text-24rpx" />
+                  <IcomoonFont name="image" class="text-purple-500 text-24rpx" />
                 </view>
                 <view class="w-40rpx h-40rpx bg-purple-100 rounded-full flex items-center justify-center">
-                  <IconFont name="palette" class="text-purple-500 text-24rpx" />
+                  <IcomoonFont name="palette" class="text-purple-500 text-24rpx" />
                 </view>
                 <view class="w-40rpx h-40rpx bg-purple-100 rounded-full flex items-center justify-center">
-                  <IconFont name="crop" class="text-purple-500 text-24rpx" />
+                  <IcomoonFont name="crop" class="text-purple-500 text-24rpx" />
                 </view>
                 <view class="w-40rpx h-40rpx bg-purple-100 rounded-full flex items-center justify-center">
-                  <IconFont name="print" class="text-purple-500 text-24rpx" />
+                  <IcomoonFont name="print" class="text-purple-500 text-24rpx" />
                 </view>
                 <view class="w-40rpx h-40rpx bg-purple-100 rounded-full flex items-center justify-center">
-                  <IconFont name="ruler" class="text-purple-500 text-24rpx" />
+                  <IcomoonFont name="ruler" class="text-purple-500 text-24rpx" />
                 </view>
                 <view class="w-40rpx h-40rpx bg-purple-100 rounded-full flex items-center justify-center">
-                  <IconFont name="magic" class="text-purple-500 text-24rpx" />
+                  <IcomoonFont name="magic" class="text-purple-500 text-24rpx" />
                 </view>
               </view>
             </view>
@@ -104,7 +104,7 @@
             <view class="flex items-center">
               <view
                 :class="`bg-${type.backgroundColor}-100 w-80rpx h-80rpx rounded-lg flex items-center justify-center mr-3`">
-                <IconFont :name="type.icon" :class="`text-${type.backgroundColor}-500`" />
+                <IcomoonFont :name="type.icon" :class="`text-${type.backgroundColor}-500`" />
               </view>
               <view>
                 <text class="font-medium text-28rpx">{{ type.name }}</text>

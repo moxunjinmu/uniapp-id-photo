@@ -18,7 +18,7 @@ onHide(() => {
 
 <style>
 /* 引入iconfont图标 */
-@import "./common/iconfont/iconfont.wxss";
+@import "./common/iconfont/icomoon.wxss";
 
 /* 全局样式 */
 page {

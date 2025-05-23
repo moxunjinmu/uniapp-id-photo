@@ -109,9 +109,9 @@ import { onLoad, onUnload } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
 import { usePhotoStore } from "@/store/modules/photo";
 import { useHistoryStore } from "@/store/modules/history"; // 新增导入
-import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
+import { usePhotoProcessor } from "@/package-index/hooks/usePhotoProcessor";
 import { useToast } from "@/hooks/useToast";
-import { PhotoType, PreviewMode } from "@/enums/PhotoType";
+import { PhotoType, PreviewMode } from "@/enums/index";
 import { saveImageToPhotosAlbum } from "@/utils/file";
 import { useImageBackground } from "@/hooks/useImageBackground";
 

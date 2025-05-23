@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { onLoad } from "@dcloudio/uni-app";
-import { useCameraController } from "@/hooks/useCameraController";
+import { useCameraController } from "@/hooks";
 import { usePhotoStore } from "@/store/modules/photo";
 import { useToast } from "@/hooks/useToast";
 
@@ -96,7 +96,7 @@ const handleTakePicture = async () => {
 const navigateToPhotoResult = () => {
   console.log("导航到照片结果页");
   uni.navigateTo({
-    url: "/pages-index/photo-result/index",
+    url: "/package-index/pages/photo-result/index",
   });
 };
 

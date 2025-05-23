@@ -1,10 +1,10 @@
-import { PhotoType } from "@/enums/PhotoType";
+import { PhotoType } from "@/enums/index";
 import { removeBackground, mockRemoveBackground, createPhotoLayout, addWatermark } from "@/api/image";
 import { RemoveBackgroundOptions } from "@/enums";
-import { useToast } from "./useToast";
+import { useToast } from "../../hooks/useToast";
 import { readFile, saveFile } from "@/utils/file";
 import { usePhotoStore } from "@/store/modules/photo";
-import { useImageBackground } from "./useImageBackground";
+import { useImageBackground } from "../../hooks/useImageBackground";
 
 export interface PhotoProcessorOptions {
   backgroundColor: string;

@@ -121,15 +121,13 @@ import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
 import { usePhotoStore } from "@/store/modules/photo";
-import { useCameraController } from "@/hooks/useCameraController";
-// import { usePhotoProcessor } from "@/hooks/usePhotoProcessor";
+import { useCameraController } from "@/hooks";
 import { useToast } from "@/hooks/useToast";
-import { PhotoType } from "@/enums/PhotoType";
+import { PhotoType } from "@/enums/index";
 
 const configStore = useConfigStore();
 const photoStore = usePhotoStore();
 const { chooseFromAlbum } = useCameraController();
-// const { changeBackgroundColor } = usePhotoProcessor();
 const { showToast, showLoading, hideLoading } = useToast();
 // 获取照片类型ID
 const photoTypeId = ref("");
@@ -174,14 +172,14 @@ const handleChooseFromAlbum = async () => {
 // 导航到相机页面
 const navigateToCamera = () => {
   uni.navigateTo({
-    url: "/pages-index/camera/index",
+    url: "/package-index/pages/camera/index",
   });
 };
 
 // 导航到结果页面
 const navigateToPhotoResult = () => {
   uni.navigateTo({
-    url: "/pages-index/photo-result/index",
+    url: "/package-index/pages/photo-result/index",
   });
 };
 

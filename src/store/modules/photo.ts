@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-// import { PhotoType } from "@/enums/PhotoType";
 
 export interface PhotoState {
   // 当前选择的照片类型ID

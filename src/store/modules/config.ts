@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { PhotoType } from "@/enums/PhotoType";
+import { PhotoType } from "@/enums/index";
 
 export const useConfigStore = defineStore("config", () => {
   // 证件照类型列表

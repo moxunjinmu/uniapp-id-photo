@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { useToast } from "./useToast";
+import { useToast } from "@/hooks";
 
 export interface CameraOptions {
   devicePosition?: "front" | "back";

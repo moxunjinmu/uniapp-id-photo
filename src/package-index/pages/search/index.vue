@@ -82,7 +82,7 @@ const clearSearch = () => {
 // 导航到详情页
 const navigateToDetail = (id: string) => {
   uni.navigateTo({
-    url: `/pages-index/detail/index?id=${id}`,
+    url: `/package-index/pages/detail/index?id=${id}`,
   });
 };
 

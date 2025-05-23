@@ -35,22 +35,22 @@
   ],
   "subPackages": [
     {
-      "root": "pages-sub",
+      "root": "package-sub",
       "pages": [
         {
-          "path": "photo-edit/index",
+          "path": "pages/photo-edit/index",
           "style": {
             "navigationBarTitleText": "照片编辑"
           }
         },
         {
-          "path": "background-change/index",
+          "path": "pages/background-change/index",
           "style": {
             "navigationBarTitleText": "背景更换"
           }
         },
         {
-          "path": "size-adjust/index",
+          "path": "pages/size-adjust/index",
           "style": {
             "navigationBarTitleText": "尺寸调整"
           }
@@ -58,35 +58,35 @@
       ]
     },
     {
-      "root": "pages-index",
+      "root": "package-index",
       "pages": [
         {
-          "path": "search/index",
+          "path": "pages/search/index",
           "style": {
             "navigationBarTitleText": "搜索"
           }
         },
         {
-          "path": "detail/index",
+          "path": "pages/detail/index",
           "style": {
             "navigationBarTitleText": "证件照详情"
           }
         },
         {
-          "path": "camera/index",
+          "path": "pages/camera/index",
           "style": {
             "navigationBarTitleText": "拍摄证件照",
             "navigationStyle": "custom"
           }
         },
         {
-          "path": "photo-result/index",
+          "path": "pages/photo-result/index",
           "style": {
             "navigationBarTitleText": "拍照结果"
           }
         },
         {
-          "path": "login/index",
+          "path": "pages/login/index",
           "style": {
             "navigationBarTitleText": "登录"
           }
@@ -95,10 +95,10 @@
     }
   ],
   "preloadRule": {
-    // 当我们进入了pages/index/index页面以后就会预下载pages-index分包
+    // 当我们进入了pages/index/index页面以后就会预下载package-index分包
     "pages/index/index": {
       "network": "all", //在指定网络下预下载，可选值为：all（不限网络）、wifi（仅wifi下预下载）
-      "packages": ["pages-index"] //进入页面后预下载分包
+      "packages": ["package-index"] //进入页面后预下载分包
     }
   },
   "globalStyle": {
@@ -138,5 +138,6 @@
         "selectedIconPath": "static/tabbar/profile-active.png"
       }
     ]
-  }
+  },
+  "lazyCodeLoading": "requiredComponents"
 }

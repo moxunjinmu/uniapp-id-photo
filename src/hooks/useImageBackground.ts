@@ -1,4 +1,4 @@
-import { PhotoType } from "@/enums/PhotoType";
+import { PhotoType } from "@/enums/index";
 import { useToast } from "./useToast";
 
 // 图片缓存

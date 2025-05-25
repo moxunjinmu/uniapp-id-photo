@@ -71,6 +71,8 @@ pnpm dev:mp-weixin
 # 开发支付宝小程序
 pnpm dev:mp-alipay
 
+# 预览 H5
+pnpm preview:h5
 # 更多平台请参考 package.json 中的 scripts
 ```
 

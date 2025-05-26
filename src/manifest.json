@@ -57,7 +57,8 @@
     "usingComponents": true,
     "optimization": {
       "subPackages": true
-    }
+    },
+    "__usePrivacyCheck__": true
   },
   "mp-alipay": {
     "usingComponents": true

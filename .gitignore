@@ -24,3 +24,4 @@ dist
 # Auto-generated files
 auto-imports.d.ts
 .eslintrc-auto-import.json
+README_PRIVACY.md

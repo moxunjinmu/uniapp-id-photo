@@ -95,6 +95,12 @@
       <!-- 热门尺寸 -->
       <view class="mx-4 mt-4">
         <text class="font-bold text-gray-800 text-32rpx mb-3 block">热门尺寸</text>
+
+        <!-- 测试隐私弹窗按钮 -->
+        <view class="bg-red-100 rounded-xl p-3 mb-3" @tap="testPrivacyDialog">
+          <text class="text-red-600 font-medium">🔒 测试隐私弹窗</text>
+        </view>
+
         <view class="grid grid-cols-2 gap-3">
           <view
             v-for="type in photoTypes"
@@ -123,18 +129,32 @@
         </view>
       </view>
     </view>
+
+    <!-- 版本信息 -->
+    <view class="version-info">
+      <text class="text-24rpx text-gray-400">证件照小助手 v1.0.0</text>
+    </view>
+
+    <!-- 隐私弹窗组件 -->
+    <showPrivacyAgreement ref="privacyComponentRef" />
   </view>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { useConfigStore } from "@/store/modules/config";
 import { useHistoryStore } from "@/store/modules/history";
+import { usePrivacy } from "@/hooks/usePrivacy";
+import showPrivacyAgreement from "@/components/showPrivacyAgreement.vue";
 
 // 初始化stores
 const configStore = useConfigStore();
 const historyStore = useHistoryStore();
 const photoTypes = computed(() => configStore.getPopularPhotoTypes);
+
+// 隐私管理
+const { privacyComponentRef, forceShowPrivacy, resetPrivacyStatus } = usePrivacy();
 
 // 初始化历史记录
 onLoad(() => {
@@ -158,6 +178,36 @@ const navigateToDetail = (id: string) => {
   uni.navigateTo({
     url: `/package-index/pages/detail/index?id=${id}`,
   });
+};
+
+// 测试隐私弹窗
+const testPrivacyDialog = async () => {
+  console.log("开始测试隐私弹窗");
+  try {
+    // 先重置隐私状态，确保弹窗会显示
+    resetPrivacyStatus();
+
+    const result = await forceShowPrivacy();
+    console.log("隐私弹窗结果：", result);
+
+    if (result.event === "agree") {
+      uni.showToast({
+        title: "您同意了隐私协议",
+        icon: "success",
+      });
+    } else {
+      uni.showToast({
+        title: "您拒绝了隐私协议",
+        icon: "none",
+      });
+    }
+  } catch (error) {
+    console.error("测试隐私弹窗失败：", error);
+    uni.showToast({
+      title: "测试失败",
+      icon: "error",
+    });
+  }
 };
 </script>
 

@@ -54,6 +54,36 @@
       </view>
     </view>
 
+    <!-- 隐私设置 -->
+    <view class="bg-white rounded-xl mb-4">
+      <view class="px-4 py-3 border-b border-gray-100">
+        <text class="text-30rpx font-medium">隐私设置</text>
+      </view>
+
+      <view class="menu-item" @tap="handlePrivacySettings">
+        <view class="flex items-center">
+          <view class="menu-icon bg-red-50">
+            <IcomoonFont name="shield-alt" class="text-red-500" />
+          </view>
+          <text class="ml-3">隐私协议</text>
+          <text class="ml-2 text-24rpx" :class="hasAgreedPrivacy ? 'text-green-500' : 'text-gray-400'">
+            {{ hasAgreedPrivacy ? "已同意" : "未同意" }}
+          </text>
+        </view>
+        <IcomoonFont name="chevron-right" class="text-gray-300" />
+      </view>
+
+      <view class="menu-item" @tap="handleResetPrivacy">
+        <view class="flex items-center">
+          <view class="menu-icon bg-amber-50">
+            <IcomoonFont name="refresh" class="text-amber-500" />
+          </view>
+          <text class="ml-3">重置隐私设置</text>
+        </view>
+        <IcomoonFont name="chevron-right" class="text-gray-300" />
+      </view>
+    </view>
+
     <!-- 关于我们 -->
     <view class="bg-white rounded-xl mb-4">
       <view class="px-4 py-3 border-b border-gray-100">
@@ -95,6 +125,9 @@
     <view class="version-info">
       <text class="text-24rpx text-gray-400">证件照小助手 v1.0.0</text>
     </view>
+
+    <!-- 隐私弹窗组件 -->
+    <showPrivacyAgreement ref="privacyComponentRef" />
   </view>
 </template>
 
@@ -102,9 +135,14 @@
 import { ref, computed } from "vue";
 import { useUserStore } from "@/store/modules/user";
 import { useToast } from "@/hooks/useToast";
+import { usePrivacy } from "@/hooks/usePrivacy";
+import showPrivacyAgreement from "@/components/showPrivacyAgreement.vue";
 
 const userStore = useUserStore();
 const { showToast } = useToast();
+
+// 隐私管理
+const { privacyComponentRef, forceShowPrivacy, resetPrivacyStatus, hasAgreedPrivacy } = usePrivacy();
 
 // 用户信息
 const userInfo = ref({
@@ -148,6 +186,35 @@ const handleFollowAccount = () => {
     fail: (err) => {
       console.error("公众号二维码展示失败", err);
       showToast("图片加载失败，请重试");
+    },
+  });
+};
+
+// 隐私设置
+const handlePrivacySettings = async () => {
+  try {
+    const result = await forceShowPrivacy();
+    if (result.event === "agree") {
+      showToast("感谢您同意我们的隐私协议");
+    } else {
+      showToast("您可以随时在设置中重新查看隐私协议");
+    }
+  } catch (error) {
+    console.error("隐私设置失败：", error);
+    showToast("操作失败，请重试");
+  }
+};
+
+// 重置隐私设置
+const handleResetPrivacy = () => {
+  uni.showModal({
+    title: "重置隐私设置",
+    content: "重置后，您需要重新同意隐私协议才能使用相关功能。确定要重置吗？",
+    success: (res) => {
+      if (res.confirm) {
+        resetPrivacyStatus();
+        showToast("隐私设置已重置");
+      }
     },
   });
 };

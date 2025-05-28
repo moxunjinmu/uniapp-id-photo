@@ -40,6 +40,9 @@
         </view>
       </view>
     </view>
+
+    <!-- 隐私弹窗组件 -->
+    <showPrivacyAgreement ref="privacyComponentRef" />
   </view>
 </template>
 
@@ -48,15 +51,39 @@ import { onLoad } from "@dcloudio/uni-app";
 import { useCameraController } from "@/hooks";
 import { usePhotoStore } from "@/store/modules/photo";
 import { useToast } from "@/hooks/useToast";
+import { usePrivacy } from "@/hooks/usePrivacy";
+import showPrivacyAgreement from "@/components/showPrivacyAgreement.vue";
 
 // 获取相机控制器
 const { devicePosition, initCamera, toggleCameraPosition, takePicture, isCameraReady } = useCameraController();
 const { showToast, showLoading, hideLoading } = useToast();
 const photoStore = usePhotoStore();
 
+// 隐私管理
+const { privacyComponentRef, checkAndShowPrivacy } = usePrivacy();
+
 // 初始化相机
-onLoad(() => {
-  initCamera();
+onLoad(async () => {
+  // 首先检查隐私授权
+  try {
+    const privacyResult = await checkAndShowPrivacy();
+    if (privacyResult.event === "agree") {
+      // 用户同意隐私协议，初始化相机
+      initCamera();
+    } else {
+      // 用户拒绝隐私协议，返回上一页
+      showToast("需要您的同意才能使用相机功能");
+      setTimeout(() => {
+        uni.navigateBack();
+      }, 1500);
+    }
+  } catch (error) {
+    console.error("隐私检查失败：", error);
+    showToast("隐私检查失败，请重试");
+    setTimeout(() => {
+      uni.navigateBack();
+    }, 1500);
+  }
 });
 
 // 切换摄像头
@@ -74,6 +101,19 @@ const handleCameraError = (error: any) => {
 const handleTakePicture = async () => {
   if (!isCameraReady.value) {
     showToast("相机未就绪，请稍后再试");
+    return;
+  }
+
+  // 再次检查隐私授权（防止用户在使用过程中撤销授权）
+  try {
+    const privacyResult = await checkAndShowPrivacy();
+    if (privacyResult.event !== "agree") {
+      showToast("需要您的同意才能使用拍照功能");
+      return;
+    }
+  } catch (error) {
+    console.error("隐私检查失败：", error);
+    showToast("隐私检查失败，请重试");
     return;
   }
 

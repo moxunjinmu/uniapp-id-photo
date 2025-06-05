@@ -58,7 +58,16 @@
     "optimization": {
       "subPackages": true
     },
-    "__usePrivacyCheck__": true
+    "__usePrivacyCheck__": true,
+    "requiredPrivateInfos": ["chooseImage", "saveImageToPhotosAlbum", "camera"],
+    "permission": {
+      "scope.camera": {
+        "desc": "用于拍摄证件照"
+      },
+      "scope.writePhotosAlbum": {
+        "desc": "用于保存证件照到相册"
+      }
+    }
   },
   "mp-alipay": {
     "usingComponents": true

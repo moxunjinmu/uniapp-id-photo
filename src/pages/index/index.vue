@@ -130,11 +130,6 @@
       </view>
     </view>
 
-    <!-- 版本信息 -->
-    <view class="version-info">
-      <text class="text-24rpx text-gray-400">证件照小助手 v1.0.0</text>
-    </view>
-
     <!-- 隐私弹窗组件 -->
     <showPrivacyAgreement ref="privacyComponentRef" />
   </view>

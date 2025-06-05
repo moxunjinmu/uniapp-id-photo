@@ -15,7 +15,21 @@
       </view>
       <view class="privacy-buttons">
         <button class="refuse-btn" @click="handleRefusePrivacy">拒绝</button>
+        <!-- 微信小程序环境使用特殊的隐私授权按钮 -->
+        <!-- #ifdef MP-WEIXIN -->
+        <button
+          class="agree-btn"
+          id="agree-btn"
+          open-type="agreePrivacyAuthorization"
+          @agreeprivacyauthorization="handleAgreePrivacyAuthorization"
+          @click="handleAgreeClick">
+          同意
+        </button>
+        <!-- #endif -->
+        <!-- 非微信小程序环境使用普通按钮 -->
+        <!-- #ifndef MP-WEIXIN -->
         <button class="agree-btn" id="agree-btn" @click="handleAgreeClick">同意</button>
+        <!-- #endif -->
       </view>
     </view>
   </view>
@@ -29,6 +43,11 @@ import { useToast } from "@/hooks/useToast";
 // 声明微信小程序API类型
 declare const wx: {
   openPrivacyContract: (options: { success?: () => void; fail?: () => void }) => void;
+  requirePrivacyAuthorize: (options: {
+    privacyList: string[];
+    success?: () => void;
+    fail?: (res: any) => void;
+  }) => void;
 };
 
 interface PrivacyResult {
@@ -98,9 +117,36 @@ const handleRefusePrivacy = () => {
   }
 };
 
-// 普通点击事件处理（备用方案）
+// 微信小程序隐私授权事件
+const handleAgreePrivacyAuthorization = () => {
+  console.log("微信隐私授权事件触发");
+  handleAgreeAction();
+};
+
+// 普通点击事件处理
 const handleAgreeClick = () => {
-  console.log("用户同意隐私协议");
+  console.log("用户点击同意按钮");
+
+  // #ifdef MP-WEIXIN
+  // 在微信小程序中，如果有隐私授权事件，优先使用授权事件
+  // 这里添加一个短暂延时，让隐私授权事件有机会触发
+  setTimeout(() => {
+    if (isVisible.value) {
+      console.log("隐私授权事件未触发，使用普通点击逻辑");
+      handleAgreeAction();
+    }
+  }, 100);
+  // #endif
+
+  // #ifndef MP-WEIXIN
+  // 非微信小程序环境直接处理
+  handleAgreeAction();
+  // #endif
+};
+
+// 统一的同意处理逻辑
+const handleAgreeAction = () => {
+  console.log("执行同意隐私协议逻辑");
   closePopup();
   privacyStore.setPrivacyAgreement(true);
 
